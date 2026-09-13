@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') sosis_json_out(array('ok' => false, '
 $db = sosis_db_load();
 $in = sosis_input();
 if (array_key_exists('downloadEnabled', $in)) $db['site']['downloadEnabled'] = (bool) $in['downloadEnabled'];
-$strings = array('notes', 'siteName', 'heroTitle', 'heroSub', 'downloadLabel', 'footerText');
+$strings = array('notes', 'siteName', 'heroTitle', 'heroSub', 'downloadLabel', 'footerText', 'cardNumber', 'cardHolder', 'paymentNote');
 foreach ($strings as $k) {
     if (array_key_exists($k, $in)) {
         $v = trim((string) $in[$k]);

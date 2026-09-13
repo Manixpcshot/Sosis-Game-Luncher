@@ -21,8 +21,10 @@ import { aiPage } from './pages/ai.js';
 import { downloadsPage } from './pages/downloads.js';
 import { profilePage } from './pages/profile.js';
 import { leaderboardPage } from './pages/leaderboard.js';
+import { storePage } from './pages/store.js';
 
 const PAGES = {
+  store: { render: storePage, title: 'nav.store' },
   library: { render: libraryPage, title: 'nav.library' },
   favorites: { render: favoritesPage, title: 'nav.favorites' },
   leaderboard: { render: leaderboardPage, title: 'nav.leaderboard' },
@@ -50,7 +52,8 @@ async function boot() {
     sessions: data.sessions,
     storage: data.storage,
     sort: data.settings.library.defaultSort,
-    view: data.settings.library.defaultView
+    view: data.settings.library.defaultView,
+    online: data.online || null
   });
   applyAppearance(data.settings);
   document.getElementById('appShell').classList.toggle('sidebar-collapsed', state.sidebarCollapsed);
@@ -64,7 +67,13 @@ async function boot() {
 
   route(false);
   startSessionTicks();
-  setTimeout(() => document.getElementById('bootSplash').classList.add('hidden'), 350);
+  updateNetBanner(data.online, true);
+  const wasOffline = data.online && (data.online.internet === false || data.online.server === false);
+  if (wasOffline) {
+    const splash = document.getElementById('bootSplash');
+    splash.appendChild(h('div', { class: 'boot-offline', text: t('splash.offline') }));
+  }
+  setTimeout(() => document.getElementById('bootSplash').classList.add('hidden'), wasOffline ? 1100 : 350);
 }
 
 function parseRoute() {
@@ -134,6 +143,57 @@ function wireEvents() {
   subscribe(async (s) => {
     updateGlobalPill();
   });
+
+  // Offline-mode awareness (net state from main process)
+  if (window.sosis.net && window.sosis.net.onState) {
+    window.sosis.net.onState((ns) => {
+      const prev = state.online;
+      setState({ online: ns });
+      updateNetBanner(ns, false);
+      const wasDown = prev && (prev.internet === false || prev.server === false);
+      const isUp = ns && ns.internet !== false && ns.server !== false;
+      if (wasDown && isUp) {
+        toast.success(t('net.back'));
+        window.dispatchEvent(new CustomEvent('sosis:rerender'));
+      }
+    });
+  }
+}
+
+function updateNetBanner(ns, initial) {
+  const shell = document.getElementById('appShell');
+  if (!shell) return;
+  let banner = document.getElementById('netBanner');
+  const offline = ns && (ns.internet === false || ns.server === false);
+  if (!offline) {
+    if (banner) banner.remove();
+    document.body.classList.remove('offline');
+    return;
+  }
+  document.body.classList.add('offline');
+  if (!banner) {
+    banner = h('div', { id: 'netBanner', class: 'net-banner', role: 'status' }, [
+      h('span', { class: 'nb-icon' }, [icon(ns && ns.internet === false ? 'wifiOff' : 'globe', 15)]),
+      h('span', { class: 'nb-text', text: ns && ns.internet === false ? t('net.offlineNoInternet') : t('net.offlineNoServer') }),
+      h('button', {
+        class: 'btn btn-sm btn-ghost nb-retry',
+        onclick: async (e) => {
+          e.target.disabled = true;
+          const fresh = await window.sosis.net.probe();
+          e.target.disabled = false;
+          if (fresh && fresh.ok) setState({ online: fresh.data });
+          updateNetBanner(fresh && fresh.ok ? fresh.data : ns, false);
+        }
+      }, [h('span', { 'data-i18n': 'net.retry' })])
+    ]);
+    const body = shell.querySelector('.app-body');
+    shell.insertBefore(banner, body);
+  } else {
+    const txt = banner.querySelector('.nb-text');
+    if (txt) txt.textContent = ns && ns.internet === false ? t('net.offlineNoInternet') : t('net.offlineNoServer');
+  }
+  applyToDocument(banner);
+  if (!initial) return;
 }
 
 let pillTimer = null;

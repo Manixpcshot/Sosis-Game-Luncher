@@ -6,8 +6,9 @@ RewriteBase /
 # keep the Authorization header available for PHP on CGI/FPM
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# never expose the data directory
+# never expose the data / game-file directories directly
 RewriteRule ^data(/|$) - [F,L]
+RewriteRule ^gamedata(/|$) - [F,L]
 RewriteRule ^api/_lib\.php$ - [F,L]
 
 # ---------------- API mapping (same URLs as the app expects)
@@ -29,6 +30,20 @@ RewriteRule ^api/admin/publish$      api/admin_publish.php [L]
 RewriteRule ^api/admin/config$       api/admin_config.php  [L]
 RewriteRule ^api/admin/password$     api/admin_password.php [L]
 RewriteRule ^api/admin/logout$       api/admin_logout.php  [L]
+
+# ---------------- Store (game downloads like Steam)
+RewriteRule ^api/store/games$        api/store_games.php   [L]
+RewriteRule ^api/store/claim$        api/store_claim.php   [L]
+RewriteRule ^api/store/buy$          api/store_buy.php     [L]
+RewriteRule ^api/store/payments?$    api/store_payment.php [L]
+RewriteRule ^gamedl/([^/]+)/(.+)$    api/gamedl.php?id=$1&file=$2 [L]
+
+# ---------------- Admin: store games / payments / credit
+RewriteRule ^api/admin/games/upload$ api/admin_game_upload.php [L]
+RewriteRule ^api/admin/games/?$      api/admin_games.php   [L]
+RewriteRule ^api/admin/games/([^/]+)$ api/admin_games.php?id=$1 [L]
+RewriteRule ^api/admin/payments$     api/admin_payments.php [L]
+RewriteRule ^api/admin/users/credit$ api/admin_credit.php  [L]
 
 # ---------------- Launcher Download Endpoint
 RewriteRule ^datasetup/?$          api/manifest.php        [L]

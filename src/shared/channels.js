@@ -107,6 +107,18 @@ const CH = {
   ACCOUNT_POPULAR: 'sosis:account:popular',
   ACCOUNT_SERVER_PING: 'sosis:account:serverPing',
 
+  // Network / offline mode
+  NET_STATE: 'sosis:event:netState',
+  NET_PROBE: 'sosis:net:probe',
+
+  // Store (Steam-like game downloads)
+  STORE_CATALOG: 'sosis:store:catalog',
+  STORE_CLAIM: 'sosis:store:claim',
+  STORE_BUY: 'sosis:store:buy',
+  STORE_PAYMENT: 'sosis:store:payment',
+  STORE_PAYMENTS: 'sosis:store:payments',
+  STORE_INSTALL: 'sosis:store:install',
+
   // System / diagnostics
   SYS_LOGS_OPEN: 'sosis:sys:openLogs',
   SYS_RELAUNCH: 'sosis:sys:relaunch'

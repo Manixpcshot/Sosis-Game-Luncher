@@ -34,7 +34,7 @@ function download(url, destFile, opts = {}) {
       const mod = currentUrl.startsWith('https:') ? https : http;
       const req = mod.get(
         currentUrl,
-        { timeout: opts.timeoutMs || 30000, headers: { 'user-agent': 'SosisLauncher/1.0' } },
+        { timeout: opts.timeoutMs || 30000, headers: Object.assign({ 'user-agent': 'SosisLauncher/1.0' }, opts.headers || {}) },
         (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
             res.resume();

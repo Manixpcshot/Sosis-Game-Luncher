@@ -26,6 +26,9 @@ const { AccountManager } = require('./src/main/managers/AccountManager');
 const { DownloadsManager } = require('./src/main/managers/DownloadsManager');
 const { NotificationManager } = require('./src/main/managers/NotificationManager');
 const { ShortcutManager } = require('./src/main/managers/ShortcutManager');
+const { StoreManager } = require('./src/main/managers/StoreManager');
+const netState = require('./src/main/net');
+const { CH } = require('./src/shared/channels');
 const { registerIpc } = require('./src/main/ipc');
 
 app.setName('Sosis Launcher');
@@ -100,6 +103,8 @@ if (!gotLock) {
     const updates = new UpdateManager(settings);
     const downloads = new DownloadsManager(settings);
     const account = new AccountManager(settings, secrets);
+    const store = new StoreManager(account, downloads);
+    netState.bind(account);
     const notifications = new NotificationManager(settings, translations);
     const shortcuts = new ShortcutManager();
 
@@ -117,6 +122,7 @@ if (!gotLock) {
       updates,
       downloads,
       account,
+      store,
       notifications,
       shortcuts,
       getMain: () => mainWindow
@@ -143,6 +149,19 @@ if (!gotLock) {
     // 4) Main window + IPC
     mainWindow = createMainWindow(ctx);
     registerIpc(ctx);
+
+    // Offline-mode awareness: probe on boot + on window focus (throttled 30s).
+    netState.onChange((ns) => {
+      try {
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(CH.NET_STATE, ns);
+      } catch {}
+    });
+    setTimeout(() => {
+      netState.probe(true).catch(() => {});
+    }, 1200);
+    app.on('browser-window-focus', () => {
+      netState.probe(false).catch(() => {});
+    });
 
     mainWindow.on('close', (e) => {
       if (!quitting && settings.get('general', 'closeToTray') && tray) {
@@ -185,7 +204,12 @@ if (!gotLock) {
     // 6) Startup update pipeline: check -> auto download -> verify -> install
     //    -> the installer relaunches the app with the new version applied.
     if (settings.get('general', 'checkUpdatesOnStart')) {
-      setTimeout(() => {
+      setTimeout(async () => {
+        const ns = await netState.probe(true).catch(() => ({ internet: false, server: false }));
+        if (!ns || !ns.internet || !ns.server) {
+          log.info('offline mode — skipping startup update check');
+          return;
+        }
         updates
           .autoCheckAndApply()
           .then((r) => {

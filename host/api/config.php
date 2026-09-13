@@ -14,5 +14,8 @@ sosis_json_out(array(
     'heroTitle' => isset($s['heroTitle']) ? $s['heroTitle'] : '',
     'heroSub' => isset($s['heroSub']) ? $s['heroSub'] : '',
     'downloadLabel' => isset($s['downloadLabel']) ? $s['downloadLabel'] : '',
-    'footerText' => isset($s['footerText']) ? $s['footerText'] : ''
+    'footerText' => isset($s['footerText']) ? $s['footerText'] : '',
+    'cardNumber' => isset($s['cardNumber']) ? $s['cardNumber'] : '',
+    'cardHolder' => isset($s['cardHolder']) ? $s['cardHolder'] : '',
+    'paymentNote' => isset($s['paymentNote']) ? $s['paymentNote'] : ''
 ));

@@ -64,9 +64,9 @@ class DownloadsManager extends EventEmitter {
   }
 
   /** Queue a download job (future-proof API; used by tests + future features). */
-  addJob(url, { name, sha256 } = {}) {
+  addJob(url, { name, sha256, headers } = {}) {
     const id = 'job-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-    const job = { id, url, name: name || safeName(url), sha256, status: 'queued', progress: null, error: null };
+    const job = { id, url, name: name || safeName(url), sha256, headers: headers || null, status: 'queued', progress: null, error: null };
     this.jobs.set(id, job);
     this.queue.push(id);
     this._pump();
@@ -90,6 +90,7 @@ class DownloadsManager extends EventEmitter {
     this.emit('changed', this.listJobs());
     const dest = path.join(this.folder(), job.name);
     const result = await download(job.url, dest, {
+      headers: job.headers || undefined,
       onProgress: (p) => {
         job.progress = p;
         this.emit('progress', { id: job.id, ...p });

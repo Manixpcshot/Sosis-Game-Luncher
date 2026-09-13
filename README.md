@@ -55,6 +55,18 @@
   corruption recovery; import/export library.
 - **Updates** — manifest-based (`latest.json`), download with progress, SHA-256
   verification, silent hand-off to the installer.
+- **Game Store (Steam-like)** — browse/download games published from the admin
+  panel: cover + banner + hover preview & description, search, free games
+  (claim → download) and **paid games** (wallet credit or card-to-card payment:
+  the app shows the admin's card number, the user pays and sends the receipt
+  photo, the admin approves it in the panel → credit is added → the user buys
+  the game). Downloads run through the queue with progress + SHA-256 and gated
+  `/gamedl/` URLs (only free/owned games can download).
+- **Offline mode** — internet + server reachability are probed at boot (and on
+  window focus, throttled): the splash, an app-wide banner and every online
+  feature degrade gracefully; the store shows its cached catalog, session sync
+  and update checks are skipped, and the UI comes back automatically when the
+  connection returns.
 - **Web installer** — `SosisLauncherSetup.exe` bootstrapper that downloads the
   payload from the **Launcher Download Endpoint**
   (`https://app.sosis-shop.top/datasetup`), verifies SHA-256, installs, creates
@@ -78,6 +90,10 @@ npm run validate   # syntax + locale parity + unit tests
 ```
 
 ## Build the installer
+
+**One-click on Windows:** double-click **`build-setup.bat`** (checks Node.js,
+installs deps, validates, builds `dist\SosisLauncherSetup.exe`, generates the
+manifests and opens the dist folder).
 
 ```bash
 npm install
@@ -176,15 +192,24 @@ cd host && php -S 0.0.0.0:8080 router.php
 | `/datasetup` + `/datasetup/<file>` | **Launcher Download Endpoint** (manifest + verified files) |
 | `/latest.json` | update manifest consumed by the app on startup |
 | `/api/auth/*`, `/api/sync/session`, `/api/leaderboard`, `/api/games/popular`, `/api/admin/*` | accounts, session sync, community stats, admin API |
+| `/api/store/*` | store catalog, claim, buy (credit), card-to-card payment receipts |
+| `/gamedl/<gameId>/<file>` | game file downloads — gated: free **or** owned **or** admin only |
 
 **Everything is controlled from the admin panel** — no file edits needed:
 
 - **Publish update** → version, installer file, release notes; SHA-256/size are
   computed automatically. Apps then auto-update on next launch.
 - **Files** → upload/delete anything served under `/datasetup/<file>`.
-- **Site & downloads** → enable/disable the public download button and edit all
-  site texts: site name/brand, hero title, subtitle, download-button label,
-  footer text and release notes.
+- **Site & downloads** → enable/disable the public download button, edit all
+  site texts (site name/brand, hero title, subtitle, download-button label,
+  footer text, release notes) and the **payment gateway** (card number, card
+  holder, payment instructions shown in the app's purchase dialog).
+- **Game upload** → publish games to the in-app store: **direct file upload
+  (up to 2GB)** or an **external download link**, with description, price
+  (0 = free), cover / banner / hover images and publish toggle.
+- **Payments** → review card-to-card receipt photos; *Approve* adds the amount
+  to the user's wallet credit (they then buy the game in the app), *Reject*
+  closes it. The Users tab can also adjust any user's credit manually.
 - **Users** → registered accounts and play times. **Security** → change the
   admin password.
 

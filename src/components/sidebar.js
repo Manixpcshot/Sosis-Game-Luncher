@@ -4,6 +4,7 @@ import { t } from '../lib/i18n.js';
 import { state, setState } from '../lib/store.js';
 
 const NAV = [
+  { page: 'store', icon: 'store', label: 'nav.store' },
   { page: 'library', icon: 'library', label: 'nav.library' },
   { page: 'favorites', icon: 'favorites', label: 'nav.favorites' },
   { page: 'leaderboard', icon: 'trophy', label: 'nav.leaderboard' },

@@ -143,6 +143,19 @@ class AccountManager {
     }
   }
 
+  /** Fast reachability probe for the offline-mode detector (short timeout). */
+  async quickProbe(timeoutMs = 6000) {
+    try {
+      const res = await fetch(this.serverUrl() + '/api/site/config', {
+        signal: AbortSignal.timeout(timeoutMs),
+        headers: { 'content-type': 'application/json' }
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
   async ping() {
     try {
       const { status, data } = await this._req('GET', '/api/site/config', null, false);

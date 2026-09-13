@@ -120,6 +120,18 @@ const api = {
     popular: () => invoke(CH.ACCOUNT_POPULAR),
     ping: () => invoke(CH.ACCOUNT_SERVER_PING)
   },
+  store: {
+    catalog: () => invoke(CH.STORE_CATALOG),
+    claim: (gameId) => invoke(CH.STORE_CLAIM, { gameId }),
+    buy: (gameId) => invoke(CH.STORE_BUY, { gameId }),
+    payment: (gameId, dataUrl, note) => invoke(CH.STORE_PAYMENT, { gameId, dataUrl, note }),
+    payments: () => invoke(CH.STORE_PAYMENTS),
+    install: (game) => invoke(CH.STORE_INSTALL, { game })
+  },
+  net: {
+    probe: () => invoke(CH.NET_PROBE),
+    onState: (cb) => on(CH.NET_STATE, cb)
+  },
   system: {
     openLogs: () => invoke(CH.SYS_LOGS_OPEN),
     relaunch: () => invoke(CH.SYS_RELAUNCH)

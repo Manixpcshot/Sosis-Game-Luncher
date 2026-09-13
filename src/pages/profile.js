@@ -188,11 +188,40 @@ export function profilePage(root) {
           h('div', { class: 'stat-card' }, [
             h('div', { class: 'num', text: String(u.launchCount || 0) }),
             h('div', { class: 'lbl', 'data-i18n': 'profile.launches' })
+          ]),
+          h('div', { class: 'stat-card' }, [
+            h('div', { class: 'num', text: Number(u.credit || 0).toLocaleString(document.documentElement.lang === 'fa' ? 'fa-IR' : 'en-US') }),
+            h('div', { class: 'lbl', 'data-i18n': 'profile.credit' })
           ])
         ]),
         h('p', { class: 'muted small', 'data-i18n': 'profile.syncNote' })
       ])
     );
     applyToDocument(host);
+    renderPayments();
+
+    async function renderPayments() {
+      const res = await window.sosis.store.payments();
+      const payments = (res && res.payments) || [];
+      const rows = payments.length
+        ? payments.map((p) =>
+            h('div', { class: 'pay-row' }, [
+              h('div', { class: 'col', style: { gap: '2px' } }, [
+                h('div', { text: p.gameName }),
+                h('div', { class: 'muted small', text: new Date(p.createdAt).toLocaleString(document.documentElement.lang === 'fa' ? 'fa-IR' : 'en-US') })
+              ]),
+              h('span', { text: Number(p.amount || 0).toLocaleString(document.documentElement.lang === 'fa' ? 'fa-IR' : 'en-US') }),
+              h('span', { class: 'pill-status ' + p.status, 'data-i18n': 'store.status.' + p.status })
+            ])
+          )
+        : [h('p', { class: 'muted small', 'data-i18n': 'profile.noPayments' })];
+      host.appendChild(
+        h('div', { class: 'panel', style: { marginTop: '14px' } }, [
+          h('h3', { 'data-i18n': 'profile.payments' }),
+          h('div', { class: 'col', style: { gap: '8px', marginTop: '10px' } }, rows)
+        ])
+      );
+      applyToDocument(host);
+    }
   }
 }

@@ -11,6 +11,9 @@ define('SOSIS_DB', SOSIS_DATA . '/db.json');
 define('SOSIS_SECRET_FILE', SOSIS_DATA . '/secret.key');
 define('SOSIS_DOWNLOADS', SOSIS_ROOT . '/datasetup');
 define('SOSIS_AVATARS', SOSIS_ROOT . '/assets/avatars');
+define('SOSIS_STOREIMG', SOSIS_ROOT . '/assets/store');
+define('SOSIS_PAYIMG', SOSIS_ROOT . '/assets/payments');
+define('SOSIS_GAMEDATA', SOSIS_ROOT . '/gamedata');
 
 function sosis_json_out($data, $code = 200) {
     http_response_code($code);
@@ -53,8 +56,13 @@ function sosis_db_defaults() {
             'heroTitle' => '',
             'heroSub' => '',
             'downloadLabel' => '',
-            'footerText' => ''
+            'footerText' => '',
+            'cardNumber' => '',
+            'cardHolder' => '',
+            'paymentNote' => ''
         ),
+        'store' => array('games' => array()),
+        'payments' => array(),
         'admin' => null
     );
 }
@@ -65,6 +73,9 @@ function sosis_db_load() {
     if (!is_dir(SOSIS_DATA)) @mkdir(SOSIS_DATA, 0755, true);
     if (!is_dir(SOSIS_DOWNLOADS)) @mkdir(SOSIS_DOWNLOADS, 0755, true);
     if (!is_dir(SOSIS_AVATARS)) @mkdir(SOSIS_AVATARS, 0755, true);
+    if (!is_dir(SOSIS_STOREIMG)) @mkdir(SOSIS_STOREIMG, 0755, true);
+    if (!is_dir(SOSIS_PAYIMG)) @mkdir(SOSIS_PAYIMG, 0755, true);
+    if (!is_dir(SOSIS_GAMEDATA)) @mkdir(SOSIS_GAMEDATA, 0755, true);
     $db = sosis_db_defaults();
     if (file_exists(SOSIS_DB)) {
         $raw = @file_get_contents(SOSIS_DB);
@@ -168,8 +179,31 @@ function sosis_public_user($u) {
         'totalPlayTime' => isset($u['totalPlayTime']) ? $u['totalPlayTime'] : 0,
         'totalSessions' => isset($u['totalSessions']) ? $u['totalSessions'] : 0,
         'launchCount' => isset($u['launchCount']) ? $u['launchCount'] : 0,
-        'createdAt' => isset($u['createdAt']) ? $u['createdAt'] : 0
+        'createdAt' => isset($u['createdAt']) ? $u['createdAt'] : 0,
+        'credit' => isset($u['credit']) ? (int) $u['credit'] : 0,
+        'ownedGames' => isset($u['ownedGames']) && is_array($u['ownedGames']) ? array_values($u['ownedGames']) : array()
     );
+}
+
+/** Save a data:image/... base64 URL to $dir/$prefix.<ext>; returns file name or null. */
+function sosis_save_image_data_url($dataUrl, $dir, $prefix, $maxBytes = 8388608) {
+    if (!preg_match('/^data:image\/(png|jpeg|webp|gif);base64,([A-Za-z0-9+\/=]+)$/', (string) $dataUrl, $m)) return null;
+    $bin = base64_decode($m[2]);
+    if ($bin === false || strlen($bin) > $maxBytes) return null;
+    $ext = $m[1] === 'jpeg' ? 'jpg' : $m[1];
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
+    $name = preg_replace('/[^A-Za-z0-9_-]/', '', $prefix) . '.' . $ext;
+    foreach (array('png', 'jpg', 'webp', 'gif') as $old) {
+        if ($old !== $ext && file_exists($dir . '/' . preg_replace('/[^A-Za-z0-9_-]/', '', $prefix) . '.' . $old)) {
+            @unlink($dir . '/' . preg_replace('/[^A-Za-z0-9_-]/', '', $prefix) . '.' . $old);
+        }
+    }
+    if (@file_put_contents($dir . '/' . $name, $bin, LOCK_EX) === false) return null;
+    return $name;
+}
+
+function sosis_new_id($prefix) {
+    return $prefix . '-' . substr(bin2hex(random_bytes(8)), 0, 12);
 }
 
 function sosis_set_cookie($name, $value, $days, $sameSite = 'Lax') {

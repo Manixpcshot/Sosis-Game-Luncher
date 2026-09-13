@@ -69,7 +69,8 @@ function registerIpc(ctx) {
         games: games.list(),
         sessions: sessions.active(),
         storage: storage.info(),
-        overlay: settings.get('overlay')
+        overlay: settings.get('overlay'),
+        online: require('../net').state
       });
     })
   );
@@ -430,6 +431,18 @@ function registerIpc(ctx) {
   ipcMain.handle(CH.ACCOUNT_LEADERBOARD, () => guard(() => ctx.account.leaderboard()));
   ipcMain.handle(CH.ACCOUNT_POPULAR, () => guard(() => ctx.account.popular()));
   ipcMain.handle(CH.ACCOUNT_SERVER_PING, () => guard(() => ctx.account.ping()));
+
+  // ------------------------------------------------------------- network / store
+  const netState = require('../net');
+  ipcMain.handle(CH.NET_PROBE, () => guard(async () => netState.probe(true)));
+  ipcMain.handle(CH.STORE_CATALOG, () => guard(async () => ctx.store.catalog()));
+  ipcMain.handle(CH.STORE_CLAIM, (_e, p) => guard(() => ctx.store.claim(p && p.gameId)));
+  ipcMain.handle(CH.STORE_BUY, (_e, p) => guard(() => ctx.store.buy(p && p.gameId)));
+  ipcMain.handle(CH.STORE_PAYMENT, (_e, p) =>
+    guard(() => ctx.store.submitPayment(p && p.gameId, p && p.dataUrl, p && p.note))
+  );
+  ipcMain.handle(CH.STORE_PAYMENTS, () => guard(() => ctx.store.myPayments()));
+  ipcMain.handle(CH.STORE_INSTALL, (_e, p) => guard(() => ctx.store.install(p && p.game)));
 
   ipcMain.handle(CH.SYS_LOGS_OPEN, () =>
     guard(async () => {
