@@ -10,7 +10,7 @@ $sha = $s['sha256'];
 $size = $s['size'];
 if (!file_exists($path)) { $sha = null; $size = 0; }
 sosis_json_out(array(
-    'app' => 'Sosis Launcher',
+    'app' => (isset($s['siteName']) && $s['siteName'] !== '') ? $s['siteName'] : 'Sosis Launcher',
     'channel' => 'stable',
     'version' => $s['latestVersion'],
     'download' => 'https://app.sosis-shop.top/datasetup/' . $file,

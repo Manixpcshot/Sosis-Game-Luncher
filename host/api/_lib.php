@@ -48,7 +48,12 @@ function sosis_db_defaults() {
             'installerFile' => 'SosisLauncherSetup.exe',
             'sha256' => null,
             'size' => 0,
-            'releasedAt' => null
+            'releasedAt' => null,
+            'siteName' => 'Sosis Launcher',
+            'heroTitle' => '',
+            'heroSub' => '',
+            'downloadLabel' => '',
+            'footerText' => ''
         ),
         'admin' => null
     );

@@ -8,6 +8,7 @@
   let activeTab = 'publish';
 
   const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   window.adminInit = async function (t, api) {
     T = t; API = api;
@@ -82,7 +83,7 @@
       <div class="field"><label>Installer file (from Files tab)</label><select id="pubFile">${state.files
         .map((f) => `<option value="${f.name}" ${f.name === s.installerFile ? 'selected' : ''}>${f.name} · ${fmtBytes(f.size)}</option>`)
         .join('')}</select></div>
-      <div class="field"><label>Release notes</label><textarea id="pubNotes" rows="3">${s.notes || ''}</textarea></div>
+      <div class="field"><label>Release notes</label><textarea id="pubNotes" rows="3">${esc(s.notes)}</textarea></div>
       <div class="row">
         <button class="btn primary" id="pubBtn">Publish update</button>
         <span class="form-msg" id="pubMsg"></span>
@@ -110,7 +111,7 @@
   /* ------------------------------------------------ files */
   function renderFiles(host) {
     host.innerHTML = `
-      <h2 style="margin-top:0">🗂 Download files (server/data/downloads)</h2>
+      <h2 style="margin-top:0">🗂 Download files (datasetup/)</h2>
       <p class="muted small">These files are served from <code>/datasetup/&lt;name&gt;</code>. Upload the new SosisLauncherSetup.exe here, then publish it.</p>
       <div class="row" style="margin-bottom:14px">
         <input type="file" id="fileInput" />
@@ -191,6 +192,15 @@
         <label class="switch"><input type="checkbox" id="dlToggle" ${s.downloadEnabled ? 'checked' : ''} /><span class="tr"><span class="th"></span></span></label>
       </div>
       <hr style="border-color:var(--border);margin:18px 0" />
+      <h3 style="margin:0 0 10px">Site texts (leave empty = built-in default)</h3>
+      <div class="field"><label>Site name / brand</label><input id="cfgSiteName" value="${esc(s.siteName)}" placeholder="Sosis Launcher" /></div>
+      <div class="field"><label>Landing title (hero H1)</label><input id="cfgHeroTitle" value="${esc(s.heroTitle)}" placeholder="default title" /></div>
+      <div class="field"><label>Landing subtitle</label><textarea id="cfgHeroSub" rows="2" placeholder="default subtitle">${esc(s.heroSub)}</textarea></div>
+      <div class="field"><label>Download button label</label><input id="cfgDownloadLabel" value="${esc(s.downloadLabel)}" placeholder="Download Sosis Launcher" /></div>
+      <div class="field"><label>Footer text</label><input id="cfgFooterText" value="${esc(s.footerText)}" placeholder="© 2026 Sosis Launcher" /></div>
+      <div class="field"><label>Release notes (served in /latest.json and /datasetup)</label><textarea id="cfgNotes" rows="3">${esc(s.notes)}</textarea></div>
+      <div class="row"><button class="btn primary" id="siteSaveBtn">Save site settings</button><span class="form-msg" id="siteMsg"></span></div>
+      <hr style="border-color:var(--border);margin:18px 0" />
       <div class="stat-cards">
         <div class="stat-card"><b>${state.stats.users}</b><span>users</span></div>
         <div class="stat-card"><b>${state.stats.sessions}</b><span>sessions synced</span></div>
@@ -200,6 +210,30 @@
     $('dlToggle').onchange = async (e) => {
       await API('/api/admin/config', { method: 'POST', body: JSON.stringify({ downloadEnabled: e.target.checked }) });
       await refresh();
+    };
+    $('siteSaveBtn').onclick = async () => {
+      const msg = $('siteMsg');
+      msg.className = 'form-msg';
+      msg.textContent = '…';
+      const { data } = await API('/api/admin/config', {
+        method: 'POST',
+        body: JSON.stringify({
+          siteName: $('cfgSiteName').value.trim(),
+          heroTitle: $('cfgHeroTitle').value.trim(),
+          heroSub: $('cfgHeroSub').value.trim(),
+          downloadLabel: $('cfgDownloadLabel').value.trim(),
+          footerText: $('cfgFooterText').value.trim(),
+          notes: $('cfgNotes').value
+        })
+      });
+      if (data && data.ok) {
+        msg.className = 'form-msg ok';
+        msg.textContent = '✓ Saved';
+        await refresh();
+      } else {
+        msg.className = 'form-msg err';
+        msg.textContent = '✕ ' + (data ? data.error : 'network');
+      }
     };
   }
 
@@ -225,7 +259,7 @@
       <div class="field"><label>Current password</label><input id="curPass" type="password" /></div>
       <div class="field"><label>New password (min 8 chars)</label><input id="newPass" type="password" minlength="8" /></div>
       <div class="row"><button class="btn primary" id="pwBtn">Change password</button><span class="form-msg" id="pwMsg"></span></div>
-      <p class="muted small">Passwords are stored as scrypt hashes. Sessions are HMAC-signed httpOnly cookies.</p>`;
+      <p class="muted small">Passwords are stored as bcrypt hashes. Sessions are HMAC-signed httpOnly cookies.</p>`;
     $('pwBtn').onclick = async () => {
       const msg = $('pwMsg');
       const { data } = await API('/api/admin/password', {

@@ -57,7 +57,7 @@
   verification, silent hand-off to the installer.
 - **Web installer** — `SosisLauncherSetup.exe` bootstrapper that downloads the
   payload from the **Launcher Download Endpoint**
-  (`https://sosis-shop.top/app/datasetup`), verifies SHA-256, installs, creates
+  (`https://app.sosis-shop.top/datasetup`), verifies SHA-256, installs, creates
   shortcuts and launches the app; retry/cancel on failure.
 
 ---
@@ -92,7 +92,7 @@ working package. The final NSIS step that stamps the uninstaller needs Windows
 to activate) that produces:
 
 - `dist/SosisLauncherSetup.exe` — full offline installer
-- `dist/latest.json` + `dist/datasetup-manifest.json` — server manifests
+- `dist/latest.json` + `dist/datasetup-manifest.json` — update/download manifests
 - web bootstrapper artifact (see below)
 
 Web bootstrapper (the downloading setup):
@@ -101,9 +101,6 @@ Web bootstrapper (the downloading setup):
 npm run installer:bootstrap   # -> installer/bootstrapper/dist/SosisLauncherSetup.exe
 npm run installer:payload     # stage payload + manifest for upload
 ```
-
-See [`installer/README.md`](installer/README.md) for the server contract of the
-Launcher Download Endpoint.
 
 ---
 
@@ -130,48 +127,56 @@ SosisLauncher/
 │       │                    # Notification, Shortcut, IconExtractor
 │       └── util/            # log, paths, hash, semver, downloader
 ├── overlay/                 # independent overlay window (html/css/js/preload)
-├── locales/                 # en.json / fa.json (286 keys, parity-checked)
-├── database/                # schema.sql + docs (data lives in userData)
+├── locales/                 # en.json / fa.json (326 keys, parity-checked)
+├── database/                # schema.sql (data lives in userData)
+├── host/                    # cPanel-ready PHP web platform (site + API + admin)
 ├── installer/               # config.json, bootstrapper app, payload tooling
 ├── scripts/                 # validation, manifests, icons, prebuilds, github
 └── ci/                      # release CI workflow (windows-latest), ready to activate
 ```
 
-## Web platform (server + site + admin)
+## Web platform (cPanel · pure PHP)
 
-**Shared cPanel hosting (no Node needed):** the `host/` folder is a
-ready-to-upload, pure-PHP edition with the identical API contract — upload it
-to `public_html/` and you're live. See `host/README-cpanel.md` for the full
-guide (set `upload_max_filesize=1500M` in MultiPHP INI Editor, log into
-`/admin.html` with the default password `mani2010`, change it, upload
-`SosisLauncherSetup.exe`, and Publish the version — apps then auto-update).
-It ships as the `SosisLauncher-WebPlatform-cPanel-1.1.0.zip` release asset.
-
-The `server/` folder below is the Node/Express edition (for VPS/Docker or local
-preview) that turns Sosis Launcher into an online product at
-`https://app.sosis-shop.top`:
+The `host/` folder is the complete backend + website: **pure PHP (7.4+)**,
+ready to upload to any cPanel shared host. No Node.js, no Composer, no MySQL —
+data lives in `data/db.json` with file locking. Upload it into `public_html/`
+(or the `app.sosis-shop.top` subdomain root) and it works. The full Persian
+deployment guide is `host/README-cpanel.md`.
 
 ```bash
-cd server && npm install && npm start        # PORT=3000 by default
+# optional local preview (not needed on cPanel):
+cd host && php -S 0.0.0.0:8080 router.php
 ```
 
 | Route | Purpose |
 | --- | --- |
 | `/` | SEO-ready landing site (fa/en switch, download button, live stats) |
 | `/login.html` `/register.html` `/profile.html` `/leaderboard.html` | accounts, profile + avatar, play-time leaderboard & popular games |
-| `/admin.html` | **Admin panel** (password `mani2010` on first run — change it!): upload installer files, publish versions, enable/disable the public download button, users, security |
+| `/admin.html` | **Admin panel** (default password `mani2010` — change it!) |
 | `/datasetup` + `/datasetup/<file>` | **Launcher Download Endpoint** (manifest + verified files) |
 | `/latest.json` | update manifest consumed by the app on startup |
-| `/api/auth/*`, `/api/sync/session`, `/api/leaderboard`, `/api/games/popular` | accounts, session sync, community stats |
+| `/api/auth/*`, `/api/sync/session`, `/api/leaderboard`, `/api/games/popular`, `/api/admin/*` | accounts, session sync, community stats, admin API |
 
-The Electron app connects to this server for: sign-in/registration, profile +
+**Everything is controlled from the admin panel** — no file edits needed:
+
+- **Publish update** → version, installer file, release notes; SHA-256/size are
+  computed automatically. Apps then auto-update on next launch.
+- **Files** → upload/delete anything served under `/datasetup/<file>`.
+- **Site & downloads** → enable/disable the public download button and edit all
+  site texts: site name/brand, hero title, subtitle, download-button label,
+  footer text and release notes.
+- **Users** → registered accounts and play times. **Security** → change the
+  admin password.
+
+The Electron app connects to this platform for: sign-in/registration, profile +
 profile photo, play-time sync after every session, leaderboard and most-played
 games, and the **auto-update pipeline** (check on launch → download setup →
 SHA-256 verify → restart & apply when the admin publishes a higher version).
 
-Security: scrypt password hashes, HMAC-signed httpOnly session cookies,
-bearer tokens for the app, multer upload limits, admin password stored only as
-a hash (default `mani2010`, changeable in-panel or via `ADMIN_PASSWORD` env).
+Security: bcrypt password hashes, HMAC-signed httpOnly cookies/tokens, bearer
+tokens for the app, uploads confined to `datasetup/` and `assets/avatars/`,
+`data/` blocked via `.htaccess`, admin password stored only as a hash
+(default `mani2010`, changeable in-panel or via `ADMIN_PASSWORD` env).
 
 ## Configuration
 
@@ -181,8 +186,8 @@ a hash (default `mani2010`, changeable in-panel or via `ADMIN_PASSWORD` env).
 | AI endpoint | Settings → AI Assistant | provider/base URL/model/key; key encrypted at rest |
 | Overlay | Settings → Overlay | position, opacity, scale, margin, FPS toggle, preview |
 | Downloads | Settings → Downloads | folder, concurrency, auto-update |
-| Installer endpoint | `installer/config.json` | `DOWNLOAD_BASE_URL` (production = `https://sosis-shop.top/app/datasetup`) |
-| Update manifest | `SOSIS_UPDATE_URL` env | default `https://sosis-shop.top/app/latest.json` |
+| Installer endpoint | `installer/config.json` | `DOWNLOAD_BASE_URL` (production = `https://app.sosis-shop.top/datasetup`) |
+| Update manifest | `SOSIS_UPDATE_URL` env | default `https://app.sosis-shop.top/latest.json` |
 
 ### GitHub automation (optional)
 

@@ -136,19 +136,38 @@ async function refreshAuthNav() {
 }
 
 /* ------------------------------------------------------------ pages */
-async function homePage() {
-  const cfg = await api('/api/site/config');
+let SITE_CFG = null;
+
+function applySiteOverrides(cfg) {
+  if (!cfg) return;
+  const set = (sel, val) => {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach((el) => (el.textContent = val));
+  };
+  if (cfg.siteName) {
+    set('.brand span', cfg.siteName);
+    if (document.title.indexOf('Sosis Launcher') !== -1) {
+      document.title = document.title.split('Sosis Launcher').join(cfg.siteName);
+    }
+  }
+  set('[data-i18n="hero.title"]', cfg.heroTitle);
+  set('[data-i18n="hero.sub"]', cfg.heroSub);
+  set('#downloadBtn', cfg.downloadLabel);
+  set('[data-i18n="footer.rights"]', cfg.footerText);
+}
+
+async function homePage(cfg) {
   const btn = document.getElementById('downloadBtn');
   const note = document.getElementById('downloadNote');
   const chip = document.getElementById('versionChip');
-  if (cfg.data) {
-    chip.textContent = t('hero.version', { v: cfg.data.latestVersion });
-    if (!cfg.data.downloadEnabled) {
+  if (cfg) {
+    chip.textContent = t('hero.version', { v: cfg.latestVersion });
+    if (!cfg.downloadEnabled) {
       btn.setAttribute('disabled', 'disabled');
       btn.removeAttribute('href');
       note.textContent = t('hero.disabled');
     } else {
-      btn.setAttribute('href', cfg.data.downloadUrl);
+      btn.setAttribute('href', cfg.downloadUrl);
       btn.setAttribute('download', '');
     }
   }
@@ -307,8 +326,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const lb = document.getElementById('langBtn');
   if (lb) lb.onclick = () => { lang = lang === 'fa' ? 'en' : 'fa'; localStorage.setItem('sosis.lang', lang); location.reload(); };
   const page = document.body.dataset.page;
-  if (page !== 'admin') await refreshAuthNav();
-  if (page === 'home') homePage();
+  if (page !== 'admin') {
+    const cfgRes = await api('/api/site/config');
+    if (cfgRes.data && cfgRes.data.ok) { SITE_CFG = cfgRes.data; applySiteOverrides(SITE_CFG); }
+    await refreshAuthNav();
+  }
+  if (page === 'home') homePage(SITE_CFG);
   if (page === 'login') authPage('login');
   if (page === 'register') authPage('register');
   if (page === 'profile') profilePage();
