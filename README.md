@@ -119,7 +119,7 @@ to activate) that produces:
 Every tag push also runs the **release job**, which keeps the GitHub Release
 section ALWAYS up to date: the setup EXE + manifests are (re-)uploaded and the
 release marked as latest (`softprops/action-gh-release`). Manually, the same is
-done by `dist/push-and-upload.sh` (replaces existing assets with the same name).
+done by `scripts/push-and-upload.sh` (replaces existing assets with the same name).
 
 ### Setup wizard flow (`build/installer.nsh`)
 
