@@ -6,6 +6,8 @@ import { state, setState } from '../lib/store.js';
 const NAV = [
   { page: 'library', icon: 'library', label: 'nav.library' },
   { page: 'favorites', icon: 'favorites', label: 'nav.favorites' },
+  { page: 'leaderboard', icon: 'trophy', label: 'nav.leaderboard' },
+  { page: 'profile', icon: 'user', label: 'nav.profile' },
   { page: 'ai', icon: 'ai', label: 'nav.ai' },
   { page: 'downloads', icon: 'downloads', label: 'nav.downloads' }
 ];

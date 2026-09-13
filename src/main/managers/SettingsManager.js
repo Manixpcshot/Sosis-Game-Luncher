@@ -12,7 +12,12 @@ const DEFAULTS = {
     startMinimized: false,
     hardwareAcceleration: true,
     checkUpdatesOnStart: true,
+    autoUpdateOnLaunch: true, // download + apply new versions automatically
     updateChannel: 'stable' // stable | beta
+  },
+  account: {
+    serverUrl: '', // empty = https://app.sosis-shop.top
+    username: ''
   },
   appearance: {
     theme: 'dark', // dark | light

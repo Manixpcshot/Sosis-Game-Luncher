@@ -18,8 +18,8 @@ const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
-const BASE_URL = process.env.DOWNLOAD_BASE_URL || 'https://sosis-shop.top/app/datasetup';
-const UPDATE_BASE = process.env.SOSIS_UPDATE_URL || 'https://sosis-shop.top/app';
+const BASE_URL = process.env.DOWNLOAD_BASE_URL || 'https://app.sosis-shop.top/datasetup';
+const UPDATE_BASE = process.env.SOSIS_UPDATE_URL || 'https://app.sosis-shop.top';
 
 function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');

@@ -19,10 +19,14 @@ import { gameDetailsPage } from './pages/game-details.js';
 import { settingsPageRoute } from './pages/settings.js';
 import { aiPage } from './pages/ai.js';
 import { downloadsPage } from './pages/downloads.js';
+import { profilePage } from './pages/profile.js';
+import { leaderboardPage } from './pages/leaderboard.js';
 
 const PAGES = {
   library: { render: libraryPage, title: 'nav.library' },
   favorites: { render: favoritesPage, title: 'nav.favorites' },
+  leaderboard: { render: leaderboardPage, title: 'nav.leaderboard' },
+  profile: { render: profilePage, title: 'nav.profile' },
   game: { render: (root, param) => gameDetailsPage(root, param), title: 'nav.library' },
   ai: { render: aiPage, title: 'nav.ai' },
   downloads: { render: downloadsPage, title: 'nav.downloads' },

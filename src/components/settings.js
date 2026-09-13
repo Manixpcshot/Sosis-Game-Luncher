@@ -74,7 +74,8 @@ const PANELS = {
         settingRow('general.runAtLogin', 'general.runAtLoginDesc', toggle(g.runAtLogin, (v) => persist('general', { runAtLogin: v }))),
         settingRow('general.closeToTray', 'general.closeToTrayDesc', toggle(g.closeToTray, (v) => persist('general', { closeToTray: v }))),
         settingRow('general.startMinimized', 'general.startMinimizedDesc', toggle(g.startMinimized, (v) => persist('general', { startMinimized: v }))),
-        settingRow('general.checkUpdates', 'general.checkUpdatesDesc', toggle(g.checkUpdatesOnStart, (v) => persist('general', { checkUpdatesOnStart: v })))
+        settingRow('general.checkUpdates', 'general.checkUpdatesDesc', toggle(g.checkUpdatesOnStart, (v) => persist('general', { checkUpdatesOnStart: v }))),
+        settingRow('general.autoUpdate', 'general.autoUpdateDesc', toggle(g.autoUpdateOnLaunch, (v) => persist('general', { autoUpdateOnLaunch: v })))
       ])
     ]);
   },

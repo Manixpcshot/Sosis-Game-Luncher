@@ -24,7 +24,7 @@ const { download, verifySha256 } = require('../util/downloader');
 
 const log = makeLogger('update');
 
-const DEFAULT_MANIFEST_URL = 'https://sosis-shop.top/app/latest.json';
+const DEFAULT_MANIFEST_URL = 'https://app.sosis-shop.top/latest.json';
 
 class UpdateManager extends EventEmitter {
   constructor(settings) {
@@ -125,6 +125,22 @@ class UpdateManager extends EventEmitter {
     if (this.abortController) this.abortController.abort();
     this._setState({ phase: 'idle' });
     return { ok: true };
+  }
+
+  /**
+   * Startup pipeline (spec: "checking for update" on launch):
+   * check -> if newer version published -> download -> verify -> install ->
+   * the installer relaunches the app with the new version applied.
+   */
+  async autoCheckAndApply() {
+    const check = await this.check();
+    if (!check.ok || !check.updateAvailable) return check;
+    if (!this.settings.get('general', 'autoUpdateOnLaunch')) return check;
+    this.emit('auto-update', { version: check.latest });
+    const dl = await this.downloadUpdate();
+    if (!dl.ok) return { ...check, download: dl };
+    this.install(); // spawns installer and quits; installer relaunches the app
+    return { ...check, downloaded: true, installing: true };
   }
 
   install() {

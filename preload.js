@@ -109,6 +109,17 @@ const api = {
     confirm: (opts) => invoke(CH.DIALOG_CONFIRM, opts),
     message: (opts) => invoke(CH.DIALOG_MESSAGE, opts)
   },
+  account: {
+    state: () => invoke(CH.ACCOUNT_STATE),
+    login: (username, password) => invoke(CH.ACCOUNT_LOGIN, { username, password }),
+    register: (username, password, email) => invoke(CH.ACCOUNT_REGISTER, { username, password, email }),
+    logout: () => invoke(CH.ACCOUNT_LOGOUT),
+    uploadAvatar: (dataUrl) => invoke(CH.ACCOUNT_AVATAR, { dataUrl }),
+    syncNow: () => invoke(CH.ACCOUNT_SYNC),
+    leaderboard: () => invoke(CH.ACCOUNT_LEADERBOARD),
+    popular: () => invoke(CH.ACCOUNT_POPULAR),
+    ping: () => invoke(CH.ACCOUNT_SERVER_PING)
+  },
   system: {
     openLogs: () => invoke(CH.SYS_LOGS_OPEN),
     relaunch: () => invoke(CH.SYS_RELAUNCH)

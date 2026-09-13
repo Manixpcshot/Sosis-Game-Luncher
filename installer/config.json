@@ -1,7 +1,7 @@
 {
   "_comment": "Installer configuration (spec §51). Production value MUST stay the Sosis shop endpoint; override locally via DOWNLOAD_BASE_URL env when building/testing.",
-  "DOWNLOAD_BASE_URL": "https://sosis-shop.top/app/datasetup",
-  "UPDATE_MANIFEST_URL": "https://sosis-shop.top/app/latest.json",
+  "DOWNLOAD_BASE_URL": "https://app.sosis-shop.top/datasetup",
+  "UPDATE_MANIFEST_URL": "https://app.sosis-shop.top/latest.json",
   "PRODUCT_NAME": "Sosis Launcher",
   "INSTALLER_NAME": "SosisLauncherSetup.exe",
   "TIMEOUT_MS": 30000,

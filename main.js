@@ -22,6 +22,7 @@ const { SessionManager } = require('./src/main/managers/SessionManager');
 const { OverlayManager } = require('./src/main/managers/OverlayManager');
 const { AIManager } = require('./src/main/managers/AIManager');
 const { UpdateManager } = require('./src/main/managers/UpdateManager');
+const { AccountManager } = require('./src/main/managers/AccountManager');
 const { DownloadsManager } = require('./src/main/managers/DownloadsManager');
 const { NotificationManager } = require('./src/main/managers/NotificationManager');
 const { ShortcutManager } = require('./src/main/managers/ShortcutManager');
@@ -98,6 +99,7 @@ if (!gotLock) {
     const ai = new AIManager(settings, secrets, games);
     const updates = new UpdateManager(settings);
     const downloads = new DownloadsManager(settings);
+    const account = new AccountManager(settings, secrets);
     const notifications = new NotificationManager(settings, translations);
     const shortcuts = new ShortcutManager();
 
@@ -114,6 +116,7 @@ if (!gotLock) {
       ai,
       updates,
       downloads,
+      account,
       notifications,
       shortcuts,
       getMain: () => mainWindow
@@ -133,6 +136,8 @@ if (!gotLock) {
         name: game ? game.name : '',
         time: formatClock(seconds)
       });
+      // push the finished session to the Sosis Web Platform (leaderboard etc.)
+      if (game) account.syncSession(game.name, seconds).catch(() => {});
     });
 
     // 4) Main window + IPC
@@ -177,16 +182,19 @@ if (!gotLock) {
       log.warn('tray unavailable:', err && err.message);
     }
 
-    // 6) Startup update check (silent, non-blocking)
+    // 6) Startup update pipeline: check -> auto download -> verify -> install
+    //    -> the installer relaunches the app with the new version applied.
     if (settings.get('general', 'checkUpdatesOnStart')) {
       setTimeout(() => {
         updates
-          .check()
+          .autoCheckAndApply()
           .then((r) => {
-            if (r.ok && r.updateAvailable) notifications.notify('updateAvailable', { version: r.latest });
+            if (r && r.ok && r.updateAvailable && !r.installing) {
+              notifications.notify('updateAvailable', { version: r.latest });
+            }
           })
           .catch(() => {});
-      }, 8000);
+      }, 6000);
     }
 
     log.info('boot complete');

@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": "7025d5ba7fb8ceadb07654fd",
+      "username": "tester",
+      "email": null,
+      "salt": "2631230e4eaf71317c706f30165dfd91",
+      "passHash": "ab6212788e45364ad718a09e049ab460e706b63468b1477110835550d5f1480a002f0ba0703a6254f640cd4ca922fcb11f9aef72bf097a0e741edc97b7565ead",
+      "avatar": null,
+      "totalPlayTime": 4520,
+      "totalSessions": 1,
+      "launchCount": 1,
+      "createdAt": 1789335718865
+    }
+  ],
+  "tokens": {
+    "eyJ1aWQiOiI3MDI1ZDViYTdm": {
+      "userId": "7025d5ba7fb8ceadb07654fd",
+      "createdAt": 1789335718919
+    }
+  },
+  "games": {
+    "Call of Duty 3": {
+      "name": "Call of Duty 3",
+      "launches": 1,
+      "playTime": 4520,
+      "players": {
+        "7025d5ba7fb8ceadb07654fd": 4520
+      }
+    }
+  },
+  "sessions": [
+    {
+      "userId": "7025d5ba7fb8ceadb07654fd",
+      "game": "Call of Duty 3",
+      "seconds": 4520,
+      "endedAt": 1789335718932
+    }
+  ],
+  "site": {
+    "downloadEnabled": true,
+    "latestVersion": "1.1.0",
+    "notes": "",
+    "installerFile": "SosisLauncherSetup.exe"
+  },
+  "admin": {
+    "salt": "6ffa0f8bed6de3f3d1a554ca80c88d33",
+    "passHash": "1da9f89e93c5d32ba4c2fee393d50f930bc412384671138c6040537d631c864b8d9f6b622b9e4591176d893dbb609c41ed1adfe1ac878667fd5f9cfd861fddd3",
+    "changed": false
+  }
+}

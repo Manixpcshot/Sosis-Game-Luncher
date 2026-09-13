@@ -414,6 +414,23 @@ function registerIpc(ctx) {
     })
   );
 
+  // ------------------------------------------------------------- account
+  ipcMain.handle(CH.ACCOUNT_STATE, () => guard(() => ctx.account.state()));
+  ipcMain.handle(CH.ACCOUNT_LOGIN, (_e, p) => guard(() => ctx.account.login(p.username, p.password)));
+  ipcMain.handle(CH.ACCOUNT_REGISTER, (_e, p) => guard(() => ctx.account.register(p.username, p.password, p.email)));
+  ipcMain.handle(CH.ACCOUNT_LOGOUT, () => guard(() => ok(ctx.account.logout())));
+  ipcMain.handle(CH.ACCOUNT_AVATAR, (_e, p) => guard(() => ctx.account.uploadAvatarDataUrl(p.dataUrl)));
+  ipcMain.handle(CH.ACCOUNT_SYNC, () =>
+    guard(async () => {
+      const st = await ctx.account.state();
+      if (!st.loggedIn) return ok({ synced: false });
+      return ok({ synced: true, user: st.user });
+    })
+  );
+  ipcMain.handle(CH.ACCOUNT_LEADERBOARD, () => guard(() => ctx.account.leaderboard()));
+  ipcMain.handle(CH.ACCOUNT_POPULAR, () => guard(() => ctx.account.popular()));
+  ipcMain.handle(CH.ACCOUNT_SERVER_PING, () => guard(() => ctx.account.ping()));
+
   ipcMain.handle(CH.SYS_LOGS_OPEN, () =>
     guard(async () => {
       const logs = require('./util/log').dir;

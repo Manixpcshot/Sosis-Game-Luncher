@@ -743,6 +743,29 @@ textarea.text-input { resize: vertical; min-height: 70px; }
   color: var(--text-faint); font-size: 22px;
 }
 
+/* Leaderboard lists ------------------------------------------------------------------------------- */
+.board-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.board-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface); font-size: calc(13px * var(--ui-scale));
+}
+.board-row .rank {
+  min-width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--surface-3); font-size: 11.5px; font-weight: 800; color: var(--text-dim);
+}
+.board-row .rank.top1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #111; }
+.board-row .rank.top2 { background: linear-gradient(135deg, #e5e7eb, #9ca3af); color: #111; }
+.board-row .rank.top3 { background: linear-gradient(135deg, #f59e0b, #b45309); color: #111; }
+.board-avatar {
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+  border: 1px solid var(--border-strong); flex: 0 0 auto;
+}
+.board-avatar.fallback {
+  display: grid; place-items: center; background: var(--surface-2); color: var(--accent); font-weight: 800;
+}
+.board-val { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 700; font-size: calc(12px * var(--ui-scale)); }
+
 /* Empty states --------------------------------------------------------------------------------- */
 .empty-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;

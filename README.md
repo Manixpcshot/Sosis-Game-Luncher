@@ -137,6 +137,34 @@ SosisLauncher/
 └── ci/                      # release CI workflow (windows-latest), ready to activate
 ```
 
+## Web platform (server + site + admin)
+
+The `server/` folder is a self-contained Node/Express service that turns
+Sosis Launcher into an online product. Deploy it on your host as
+`https://app.sosis-shop.top`:
+
+```bash
+cd server && npm install && npm start        # PORT=3000 by default
+```
+
+| Route | Purpose |
+| --- | --- |
+| `/` | SEO-ready landing site (fa/en switch, download button, live stats) |
+| `/login.html` `/register.html` `/profile.html` `/leaderboard.html` | accounts, profile + avatar, play-time leaderboard & popular games |
+| `/admin.html` | **Admin panel** (password `mani2010` on first run — change it!): upload installer files, publish versions, enable/disable the public download button, users, security |
+| `/datasetup` + `/datasetup/<file>` | **Launcher Download Endpoint** (manifest + verified files) |
+| `/latest.json` | update manifest consumed by the app on startup |
+| `/api/auth/*`, `/api/sync/session`, `/api/leaderboard`, `/api/games/popular` | accounts, session sync, community stats |
+
+The Electron app connects to this server for: sign-in/registration, profile +
+profile photo, play-time sync after every session, leaderboard and most-played
+games, and the **auto-update pipeline** (check on launch → download setup →
+SHA-256 verify → restart & apply when the admin publishes a higher version).
+
+Security: scrypt password hashes, HMAC-signed httpOnly session cookies,
+bearer tokens for the app, multer upload limits, admin password stored only as
+a hash (default `mani2010`, changeable in-panel or via `ADMIN_PASSWORD` env).
+
 ## Configuration
 
 | Area | Where | Notes |

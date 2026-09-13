@@ -96,6 +96,17 @@ const CH = {
   DIALOG_CONFIRM: 'sosis:dialog:confirm',
   DIALOG_MESSAGE: 'sosis:dialog:message',
 
+  // Account / community (Sosis Web Platform)
+  ACCOUNT_STATE: 'sosis:account:state',
+  ACCOUNT_LOGIN: 'sosis:account:login',
+  ACCOUNT_REGISTER: 'sosis:account:register',
+  ACCOUNT_LOGOUT: 'sosis:account:logout',
+  ACCOUNT_AVATAR: 'sosis:account:avatar',
+  ACCOUNT_SYNC: 'sosis:account:sync',
+  ACCOUNT_LEADERBOARD: 'sosis:account:leaderboard',
+  ACCOUNT_POPULAR: 'sosis:account:popular',
+  ACCOUNT_SERVER_PING: 'sosis:account:serverPing',
+
   // System / diagnostics
   SYS_LOGS_OPEN: 'sosis:sys:openLogs',
   SYS_RELAUNCH: 'sosis:sys:relaunch'

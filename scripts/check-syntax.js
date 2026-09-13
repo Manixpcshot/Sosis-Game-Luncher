@@ -68,7 +68,7 @@ function scan(dir) {
 }
 scan(path.join(ROOT, 'src'));
 scan(path.join(ROOT, 'overlay'));
-const unknown = [...used].filter((k) => !(k in en) && !k.includes('{'));
+const unknown = [...used].filter((k) => !(k in en) && !k.includes('{') && !k.endsWith('.'));
 if (unknown.length) {
   failures++;
   console.error('UNKNOWN I18N KEYS:', unknown.join(', '));

@@ -96,5 +96,7 @@ export const ICONS = {
   layers: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
   info2: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="8" r="0.7" fill="currentColor"/>',
   shortcut: '<path d="M9 15l6-6"/><path d="M10 6l1.5-1.5a4 4 0 0 1 6 6L16 12"/><path d="M14 18l-1.5 1.5a4 4 0 0 1-6-6L8 12"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M12 13v3"/><path d="M8 20h8"/><path d="M10 16h4v4h-4z"/>',
   dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
 };
