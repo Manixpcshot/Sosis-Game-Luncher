@@ -1,0 +1,57 @@
+{
+  "name": "sosis-launcher-web-installer",
+  "productName": "Sosis Launcher Setup",
+  "version": "1.0.0",
+  "description": "Sosis Launcher web bootstrapper: downloads, verifies and installs the launcher from the Launcher Download Endpoint.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.4.5",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "top.sosis-shop.launcher.setup",
+    "productName": "Sosis Launcher Setup",
+    "artifactName": "SosisLauncherSetup.${ext}",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "ui.html",
+      "ui.css",
+      "ui.js",
+      "config.json",
+      "../config.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "../../build/icon.ico",
+      "executableName": "SosisLauncherSetup",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sosis Launcher Setup",
+      "runAfterFinish": true,
+      "artifactName": "SosisLauncherSetup.${ext}"
+    }
+  }
+}

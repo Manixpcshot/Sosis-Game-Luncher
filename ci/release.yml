@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Validate
+        run: npm run validate
+      - name: Build installer (SosisLauncherSetup.exe)
+        run: npm run dist
+      - name: Generate manifests
+        run: node scripts/make-manifest.js
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sosis-launcher-windows
+          path: |
+            dist/SosisLauncherSetup.exe
+            dist/latest.json
+            dist/datasetup-manifest.json
+
+  build-web-installer:
+    needs: build-windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build bootstrapper
+        run: npm run installer:bootstrap
+      - name: Upload bootstrapper
+        uses: actions/upload-artifact@v4
+        with:
+          name: sosis-launcher-web-installer
+          path: installer/bootstrapper/dist/SosisLauncherSetup.exe
+
+# NOTE: this workflow lives in ci/ because the deployment PAT may lack the
+# `workflow` scope. To activate it on GitHub, copy it to
+# .github/workflows/release.yml (requires a token/SSH key with workflow scope).

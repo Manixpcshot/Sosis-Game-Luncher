@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self'"
+    />
+    <title>Sosis Overlay</title>
+    <link rel="stylesheet" href="./overlay.css" />
+  </head>
+  <body>
+    <div class="overlay-card" id="card">
+      <div class="row" id="fpsRow">
+        <span class="label" id="fpsLabel">FPS</span>
+        <span class="value" id="fpsValue">--</span>
+      </div>
+      <div class="row">
+        <span class="label" id="timeLabel">PLAY TIME</span>
+        <span class="value" id="timeValue">00:00:00</span>
+      </div>
+    </div>
+    <script src="./overlay.js"></script>
+  </body>
+</html>

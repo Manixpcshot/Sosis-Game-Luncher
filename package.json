@@ -1,0 +1,117 @@
+{
+  "name": "sosis-launcher",
+  "productName": "Sosis Launcher",
+  "version": "1.0.0",
+  "description": "Sosis Launcher - a modern, premium Windows game launcher with library management, play-time tracking, in-game overlay and an AI assistant. Bilingual (English / Persian) with real RTL support.",
+  "author": {
+    "name": "Manixpcshot",
+    "email": "noreply@sosis-shop.top"
+  },
+  "license": "MIT",
+  "main": "main.js",
+  "homepage": "https://sosis-shop.top",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "cross-env NODE_ENV=development electron . --dev",
+    "lint": "node scripts/check-syntax.js",
+    "test": "node --test test/",
+    "validate": "node scripts/check-syntax.js && node --test test/",
+    "icon": "node scripts/generate-icon-assets.js",
+    "prebuild": "node scripts/check-syntax.js && node scripts/fetch-native-prebuilds.js win32-x64",
+    "predist": "node scripts/fetch-native-prebuilds.js win32-x64",
+    "build": "electron-builder --win --x64",
+    "dist": "electron-builder --win nsis --x64 -c.npmRebuild=false",
+    "dist:dir": "electron-builder --win dir --x64",
+    "dist:portable": "electron-builder --win portable --x64",
+    "postdist": "node scripts/make-manifest.js",
+    "installer:bootstrap": "node installer/build-bootstrapper.js",
+    "installer:payload": "node installer/build-payload.js",
+    "github:setup": "node scripts/github-setup.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^33.4.5",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "top.sosis-shop.launcher",
+    "productName": "Sosis Launcher",
+    "artifactName": "SosisLauncherSetup.${ext}",
+    "copyright": "Copyright © 2026 Sosis Launcher",
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**",
+      "**/assets/icons/**"
+    ],
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "locales/**/*",
+      "assets/**/*",
+      "overlay/**/*",
+      "database/**/*",
+      "package.json",
+      "!**/*.map",
+      "!**/{test,tests,__tests__}/**",
+      "!installer/**",
+      "!scripts/**",
+      "!dist/**",
+      "!release/**",
+      "!.env",
+      "!.env.*",
+      "!.git/**"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "executableName": "SosisLauncher",
+      "artifactName": "SosisLauncherSetup.${ext}",
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sosis Launcher",
+      "uninstallDisplayName": "Sosis Launcher",
+      "uninstallerIcon": "build/icon.ico",
+      "installerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "menuCategory": false,
+      "artifactName": "SosisLauncherSetup.${ext}"
+    },
+    "portable": {
+      "artifactName": "SosisLauncherPortable.${ext}"
+    },
+    "publish": null
+  }
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Secrets — NEVER commit (spec §54)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.bin
+
+# Build outputs
+dist/
+build/
+release/
+out/
+installer/bootstrapper/dist/
+installer/payload/
+
+# Logs & temp
+*.log
+logs/
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Editor / tooling
+.vscode/
+.idea/
+.cache/
+.coverage/
+
+# Local databases (user data never belongs in git)
+database/*.db
+database/*.json

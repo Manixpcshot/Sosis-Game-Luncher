@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:" />
+    <title>Sosis Launcher Setup</title>
+    <link rel="stylesheet" href="./ui.css" />
+  </head>
+  <body>
+    <header class="tb">
+      <div class="brand"><span class="logo">S</span> Sosis Launcher <span class="muted">Setup</span></div>
+      <button class="winbtn" id="btnClose" aria-label="Close">✕</button>
+    </header>
+    <main>
+      <section id="stepIntro" class="step">
+        <h1>Install Sosis Launcher</h1>
+        <p class="muted">
+          This setup downloads the latest launcher files from the official
+          <b>Launcher Download Endpoint</b>, verifies them with SHA-256 and installs them.
+        </p>
+        <p class="endpoint" id="endpointLabel"></p>
+        <div class="actions">
+          <button class="btn primary" id="btnStart">Download &amp; Install</button>
+          <button class="btn" id="btnCancel1">Cancel</button>
+        </div>
+      </section>
+
+      <section id="stepDownload" class="step hidden">
+        <h2 id="dlTitle">Downloading Sosis Launcher…</h2>
+        <div class="bar"><span id="barFill"></span></div>
+        <div class="meta">
+          <span id="dlPercent">0%</span>
+          <span id="dlBytes">0 MB / 0 MB</span>
+        </div>
+        <div class="meta muted">
+          <span id="dlSpeed"></span>
+          <span id="dlEta"></span>
+        </div>
+        <div class="muted small" id="dlFile"></div>
+        <div class="actions">
+          <button class="btn" id="btnCancel2">Cancel</button>
+        </div>
+      </section>
+
+      <section id="stepError" class="step hidden">
+        <h2 class="err">Download failed.</h2>
+        <p class="muted" id="errDetail"></p>
+        <div class="actions">
+          <button class="btn primary" id="btnRetry">Retry</button>
+          <button class="btn" id="btnCancel3">Cancel</button>
+        </div>
+      </section>
+
+      <section id="stepVerifyFail" class="step hidden">
+        <h2 class="err">Downloaded file verification failed.</h2>
+        <p class="muted">The SHA-256 checksum did not match the manifest. The file was discarded and nothing was installed.</p>
+        <div class="actions">
+          <button class="btn primary" id="btnRetry2">Retry</button>
+          <button class="btn" id="btnCancel4">Cancel</button>
+        </div>
+      </section>
+
+      <section id="stepInstall" class="step hidden">
+        <h2>Installing…</h2>
+        <p class="muted">Running the verified installer and creating shortcuts. This window will close automatically.</p>
+        <div class="bar indet"><span></span></div>
+      </section>
+
+      <section id="stepDone" class="step hidden">
+        <h2 class="ok">Installation complete 🎉</h2>
+        <p class="muted">Sosis Launcher is ready. Desktop and Start Menu shortcuts were created.</p>
+        <div class="actions">
+          <button class="btn primary" id="btnLaunch">Launch Sosis Launcher</button>
+          <button class="btn" id="btnFinish">Finish</button>
+        </div>
+      </section>
+    </main>
+  </body>
+  <script src="./ui.js"></script>
+</html>

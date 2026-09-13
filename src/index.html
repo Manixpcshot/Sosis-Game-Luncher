@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' sosis: data: https:; font-src 'self' data:; connect-src 'self'; media-src 'self'"
+    />
+    <meta name="color-scheme" content="dark light" />
+    <title>Sosis Launcher</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="theme-dark">
+    <div class="app-shell" id="appShell">
+      <header class="titlebar" id="titlebar">
+        <div class="titlebar-brand">
+          <img class="brand-logo" src="sosis://app/assets/icons/icon-64.png" alt="" aria-hidden="true" />
+          <span class="brand-name">Sosis Launcher</span>
+          <span class="page-title" id="pageTitle"></span>
+        </div>
+        <div class="titlebar-actions">
+          <div class="session-pill hidden" id="globalSessionPill">
+            <span class="dot"></span>
+            <span id="globalSessionText"></span>
+          </div>
+          <div class="win-buttons">
+            <button class="win-btn" id="btnMinimize" data-i18n-title="titlebar.minimize" aria-label="Minimize">
+              <svg viewBox="0 0 12 12" width="11" height="11"><path d="M1 6h10" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+            </button>
+            <button class="win-btn" id="btnMaximize" data-i18n-title="titlebar.maximize" aria-label="Maximize">
+              <svg viewBox="0 0 12 12" width="11" height="11"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+            <button class="win-btn win-close" id="btnClose" data-i18n-title="titlebar.close" aria-label="Close">
+              <svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="app-body">
+        <aside class="sidebar" id="sidebar" aria-label="Navigation"></aside>
+        <main class="view" id="view" tabindex="-1"></main>
+      </div>
+    </div>
+
+    <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
+    <div class="modal-root" id="modalRoot"></div>
+    <div class="boot-splash" id="bootSplash">
+      <img src="sosis://app/assets/icons/icon-64.png" alt="" class="boot-logo" />
+      <div class="boot-name">Sosis Launcher</div>
+      <div class="boot-bar"><span></span></div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
