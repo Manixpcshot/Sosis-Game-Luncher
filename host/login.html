@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ورود | Sosis Launcher</title>
+<meta name="robots" content="noindex, follow" />
+<link rel="icon" type="image/png" href="/assets/icon-64.png" />
+<link rel="stylesheet" href="/css/site.css" />
+</head>
+<body data-page="login">
+<header class="nav"><div class="nav-inner">
+  <a class="brand" href="/"><img src="/assets/icon-64.png" alt="" width="30" height="30" /><span>Sosis Launcher</span></a>
+  <nav class="links"><a href="/leaderboard.html" data-i18n="nav.leaderboard">لیدربورد</a><a href="/register.html" data-i18n="nav.register">ثبت‌نام</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button>
+</div></header>
+<div class="page-wrap">
+  <div class="card">
+    <h1 data-i18n="auth.loginTitle">ورود به حساب</h1>
+    <div class="sub">Sosis Launcher — app.sosis-shop.top</div>
+    <form id="authForm">
+      <div class="field"><label data-i18n="auth.username">نام کاربری</label><input id="username" autocomplete="username" required /></div>
+      <div class="field"><label data-i18n="auth.password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" required /></div>
+      <button class="btn primary" type="submit" data-i18n="auth.loginBtn">ورود</button>
+      <div class="form-msg" id="authMsg"></div>
+    </form>
+    <p class="small muted"><a href="/register.html" data-i18n="auth.toRegister">حساب ندارید؟ ثبت‌نام کنید</a></p>
+  </div>
+</div>
+<script src="/js/site.js"></script>
+</body>
+</html>

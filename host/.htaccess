@@ -1,0 +1,45 @@
+# Sosis Launcher — cPanel / Apache configuration
+Options -Indexes
+RewriteEngine On
+RewriteBase /
+
+# keep the Authorization header available for PHP on CGI/FPM
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# never expose the data directory
+RewriteRule ^data(/|$) - [F,L]
+RewriteRule ^api/_lib\.php$ - [F,L]
+
+# ---------------- API mapping (same URLs as the app expects)
+RewriteRule ^api/site/config$        api/config.php        [L]
+RewriteRule ^api/auth/register$      api/auth_register.php [L]
+RewriteRule ^api/auth/login$         api/auth_login.php    [L]
+RewriteRule ^api/auth/weblogin$      api/auth_weblogin.php [L]
+RewriteRule ^api/auth/logout$        api/auth_logout.php   [L]
+RewriteRule ^api/auth/me$            api/auth_me.php       [L]
+RewriteRule ^api/auth/avatar$        api/auth_avatar.php   [L]
+RewriteRule ^api/sync/session$       api/sync_session.php  [L]
+RewriteRule ^api/leaderboard$        api/leaderboard.php   [L]
+RewriteRule ^api/games/popular$      api/popular.php       [L]
+RewriteRule ^api/admin/login$        api/admin_login.php   [L]
+RewriteRule ^api/admin/state$        api/admin_state.php   [L]
+RewriteRule ^api/admin/files/upload$ api/admin_upload.php  [L]
+RewriteRule ^api/admin/files/(.+)$   api/admin_delete.php?file=$1 [L]
+RewriteRule ^api/admin/publish$      api/admin_publish.php [L]
+RewriteRule ^api/admin/config$       api/admin_config.php  [L]
+RewriteRule ^api/admin/password$     api/admin_password.php [L]
+RewriteRule ^api/admin/logout$       api/admin_logout.php  [L]
+
+# ---------------- Launcher Download Endpoint
+RewriteRule ^datasetup/?$          api/manifest.php        [L]
+RewriteRule ^datasetup/(.+)$       api/dl.php?file=$1      [L,QSA]
+
+# ---------------- Update manifest
+RewriteRule ^latest\.json$         api/latest.php          [L]
+
+# friendly pages
+RewriteRule ^login$        login.html        [L]
+RewriteRule ^register$     register.html     [L]
+RewriteRule ^profile$      profile.html      [L]
+RewriteRule ^leaderboard$  leaderboard.html  [L]
+RewriteRule ^admin$        admin.html        [L]

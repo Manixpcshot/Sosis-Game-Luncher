@@ -139,8 +139,16 @@ SosisLauncher/
 
 ## Web platform (server + site + admin)
 
-The `server/` folder is a self-contained Node/Express service that turns
-Sosis Launcher into an online product. Deploy it on your host as
+**Shared cPanel hosting (no Node needed):** the `host/` folder is a
+ready-to-upload, pure-PHP edition with the identical API contract — upload it
+to `public_html/` and you're live. See `host/README-cpanel.md` for the full
+guide (set `upload_max_filesize=1500M` in MultiPHP INI Editor, log into
+`/admin.html` with the default password `mani2010`, change it, upload
+`SosisLauncherSetup.exe`, and Publish the version — apps then auto-update).
+It ships as the `SosisLauncher-WebPlatform-cPanel-1.1.0.zip` release asset.
+
+The `server/` folder below is the Node/Express edition (for VPS/Docker or local
+preview) that turns Sosis Launcher into an online product at
 `https://app.sosis-shop.top`:
 
 ```bash

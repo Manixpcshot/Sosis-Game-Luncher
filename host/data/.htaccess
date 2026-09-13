@@ -1,0 +1,2 @@
+# block direct access to the database & secrets
+Require all denied
