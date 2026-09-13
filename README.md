@@ -88,7 +88,8 @@ npm run dist       # -> dist/SosisLauncherSetup.exe  (NSIS, offline installer)
 Electron ABI (win32-x64)**, so cross-building from Linux/macOS also produces a
 working package. The final NSIS step that stamps the uninstaller needs Windows
 (or Wine on Linux); the repository ships a ready-made CI workflow
-(`.github/workflows/release.yml`, `windows-latest`) that produces:
+(`ci/release.yml`, `windows-latest` — copy it to `.github/workflows/release.yml`
+to activate) that produces:
 
 - `dist/SosisLauncherSetup.exe` — full offline installer
 - `dist/latest.json` + `dist/datasetup-manifest.json` — server manifests
@@ -133,7 +134,7 @@ SosisLauncher/
 ├── database/                # schema.sql + docs (data lives in userData)
 ├── installer/               # config.json, bootstrapper app, payload tooling
 ├── scripts/                 # validation, manifests, icons, prebuilds, github
-└── .github/workflows/       # release CI (windows-latest)
+└── ci/                      # release CI workflow (windows-latest), ready to activate
 ```
 
 ## Configuration
