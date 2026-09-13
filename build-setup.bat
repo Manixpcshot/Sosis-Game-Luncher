@@ -72,7 +72,7 @@ echo    Next steps:
 echo      1. Upload SosisLauncherSetup.exe to the admin panel (Files tab)
 echo         and Publish the new version  -^> apps auto-update.
 echo      2. Optional: publish everything to the GitHub Release:
-echo         in Git-Bash:  GITHUB_TOKEN=... bash dist/push-and-upload.sh
+echo         in Git-Bash:  GITHUB_TOKEN=... bash scripts/push-and-upload.sh
 echo  ============================================================
 echo.
 start "" "%~dp0dist"
