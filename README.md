@@ -93,7 +93,27 @@ to activate) that produces:
 
 - `dist/SosisLauncherSetup.exe` — full offline installer
 - `dist/latest.json` + `dist/datasetup-manifest.json` — update/download manifests
-- web bootstrapper artifact (see below)
+- web bootstrapper artifact (see below, published as `SosisLauncherWebSetup.exe`)
+
+Every tag push also runs the **release job**, which keeps the GitHub Release
+section ALWAYS up to date: the setup EXE + manifests are (re-)uploaded and the
+release marked as latest (`softprops/action-gh-release`). Manually, the same is
+done by `dist/push-and-upload.sh` (replaces existing assets with the same name).
+
+### Setup wizard flow (`build/installer.nsh`)
+
+The NSIS setup works like classic installers:
+
+1. **Rules / license page first** (bilingual fa/en) — install is blocked until
+   "I accept the rules" is checked.
+2. **Install options page** — checkboxes: *desktop shortcut*, *Start Menu
+   shortcut*, *create uninstaller*. Unchecking "uninstaller" removes
+   `Uninstall Sosis Launcher.exe` and the Add/Remove-Programs registry entry.
+3. Then the standard pages: install location → install → finish (run app).
+
+Silent installs (`/S`, used by the auto-update pipeline) skip the pages and
+keep all three options ON by default. The script is syntax-verified with
+makensis (UTF-16 + nsDialogs compile check).
 
 Web bootstrapper (the downloading setup):
 

@@ -42,11 +42,40 @@ jobs:
           node-version: 20
       - name: Build bootstrapper
         run: npm run installer:bootstrap
+      - name: Rename bootstrapper asset
+        shell: bash
+        run: mv installer/bootstrapper/dist/SosisLauncherSetup.exe installer/bootstrapper/dist/SosisLauncherWebSetup.exe
       - name: Upload bootstrapper
         uses: actions/upload-artifact@v4
         with:
           name: sosis-launcher-web-installer
-          path: installer/bootstrapper/dist/SosisLauncherSetup.exe
+          path: installer/bootstrapper/dist/SosisLauncherWebSetup.exe
+
+  # Keeps the GitHub Release ALWAYS up to date: every tag push re-publishes
+  # the setup EXE + manifests to the release (existing assets are replaced).
+  release:
+    needs: [build-windows, build-web-installer]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Publish / update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Sosis Launcher ${{ github.ref_name }}
+          generate_release_notes: true
+          make_latest: true
+          fail_on_unmatched_files: true
+          files: |
+            artifacts/sosis-launcher-windows/SosisLauncherSetup.exe
+            artifacts/sosis-launcher-windows/latest.json
+            artifacts/sosis-launcher-windows/datasetup-manifest.json
+            artifacts/sosis-launcher-web-installer/SosisLauncherWebSetup.exe
 
 # NOTE: this workflow lives in ci/ because the deployment PAT may lack the
 # `workflow` scope. To activate it on GitHub, copy it to

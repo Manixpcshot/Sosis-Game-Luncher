@@ -107,7 +107,8 @@
       "deleteAppDataOnUninstall": false,
       "runAfterFinish": true,
       "menuCategory": false,
-      "artifactName": "SosisLauncherSetup.${ext}"
+      "artifactName": "SosisLauncherSetup.${ext}",
+      "include": "build/installer.nsh"
     },
     "portable": {
       "artifactName": "SosisLauncherPortable.${ext}"
