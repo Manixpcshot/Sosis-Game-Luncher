@@ -6,8 +6,9 @@ color 0B
 
 echo.
 echo  ============================================================
-echo    Sosis Launcher - Windows Setup Builder (v1.2.0)
-echo    Output: dist\SosisLauncherSetup.exe
+echo    Sosis Launcher - Windows Setup Builder
+echo    Outputs: dist\SosisLauncherSetup.exe  (NSIS, like Steam)
+echo             dist\SosisLauncherSetup.msi  (Windows MSI)
 echo  ============================================================
 echo.
 
@@ -15,17 +16,33 @@ REM ---- 1) Node.js check
 where node >nul 2>nul
 if errorlevel 1 (
   echo  [X] Node.js is NOT installed.
-  echo      Install Node.js 20 LTS from https://nodejs.org and run this file again.
+  echo      Install Node.js LTS from https://nodejs.org and run this file again.
   pause
   exit /b 1
 )
-for /f "delims=" %%v in ('node -v') do echo  [OK] Node.js %%v
+for /f "delims=" %%v in ('node -v') do set NODEVER=%%v
+echo  [OK] Node.js %NODEVER%
+echo %NODEVER% | findstr /r "v2[3-9] v3[0-9]" >nul
+if not errorlevel 1 (
+  echo  [!] Node %NODEVER% is very new. If the build fails, install Node.js 20 LTS
+  echo      from https://nodejs.org ^(the script will try automatically anyway^).
+)
 
-REM ---- 2) Dependencies
+REM ---- 2) Dependencies (with automatic fallback: the app has a JSON storage
+REM         fallback, and the packaged build fetches its own SQLite prebuild,
+REM         so a failed native compile must NOT block the installer build)
 echo.
 echo  [1/4] Installing dependencies (npm install)...
 call npm install --no-audit --no-fund
-if errorlevel 1 goto :fail
+if errorlevel 1 (
+  echo.
+  echo  [!] Native module compile failed ^(node-gyp / better-sqlite3^).
+  echo      Retrying with --ignore-scripts ^(SQLite prebuild is fetched later;
+  echo      the app automatically falls back to JSON storage if needed^)...
+  call npm install --no-audit --no-fund --ignore-scripts
+  if errorlevel 1 goto :fail
+  if exist node_modules\electron\install.js node node_modules\electron\install.js
+)
 
 REM ---- 3) Validate (syntax + locales + tests)
 echo.
@@ -33,9 +50,9 @@ echo  [2/4] Validating project...
 call npm run validate
 if errorlevel 1 goto :fail
 
-REM ---- 4) Build NSIS setup
+REM ---- 4) Build NSIS setup + MSI
 echo.
-echo  [3/4] Building SosisLauncherSetup.exe (this takes a few minutes)...
+echo  [3/4] Building installers ^(NSIS .exe + .msi - takes a few minutes^)...
 call npm run dist
 if errorlevel 1 goto :fail
 
@@ -48,13 +65,14 @@ echo.
 echo  ============================================================
 echo    BUILD COMPLETE
 echo    Installer : dist\SosisLauncherSetup.exe
+echo    MSI       : dist\SosisLauncherSetup.msi
 echo    Manifests : dist\latest.json + dist\datasetup-manifest.json
 echo.
 echo    Next steps:
 echo      1. Upload SosisLauncherSetup.exe to the admin panel (Files tab)
 echo         and Publish the new version  -^> apps auto-update.
-echo      2. Optional: publish to GitHub Release:
-echo         set GITHUB_TOKEN=... ^&^& bash dist\push-and-upload.sh
+echo      2. Optional: publish everything to the GitHub Release:
+echo         in Git-Bash:  GITHUB_TOKEN=... bash dist/push-and-upload.sh
 echo  ============================================================
 echo.
 start "" "%~dp0dist"
@@ -64,5 +82,8 @@ exit /b 0
 :fail
 echo.
 echo  [X] BUILD FAILED - see the error above.
+echo      Common fixes:
+echo        - Install Node.js 20 LTS ^(https://nodejs.org^) and retry
+echo        - Free up disk space, run as Administrator
 pause
 exit /b 1

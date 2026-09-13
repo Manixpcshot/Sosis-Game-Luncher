@@ -92,12 +92,16 @@ npm run validate   # syntax + locale parity + unit tests
 ## Build the installer
 
 **One-click on Windows:** double-click **`build-setup.bat`** (checks Node.js,
-installs deps, validates, builds `dist\SosisLauncherSetup.exe`, generates the
-manifests and opens the dist folder).
+installs deps, validates, builds `dist\SosisLauncherSetup.exe` **and**
+`dist\SosisLauncherSetup.msi`, generates the manifests, opens the dist folder).
+If `better-sqlite3` fails to compile (e.g. Node 24 without Visual Studio Build
+Tools) the script automatically retries with `--ignore-scripts` — the packaged
+app fetches its own SQLite prebuild and falls back to JSON storage otherwise,
+so the installer build is never blocked. Recommended: **Node.js 20 LTS**.
 
 ```bash
 npm install
-npm run dist       # -> dist/SosisLauncherSetup.exe  (NSIS, offline installer)
+npm run dist       # -> dist/SosisLauncherSetup.exe (NSIS) + dist/SosisLauncherSetup.msi
 ```
 
 `predist` automatically fetches the matching **better-sqlite3 prebuild for the
@@ -107,7 +111,8 @@ working package. The final NSIS step that stamps the uninstaller needs Windows
 (`ci/release.yml`, `windows-latest` — copy it to `.github/workflows/release.yml`
 to activate) that produces:
 
-- `dist/SosisLauncherSetup.exe` — full offline installer
+- `dist/SosisLauncherSetup.exe` — full offline installer (NSIS, Steam-style wizard)
+- `dist/SosisLauncherSetup.msi` — standard Windows MSI package
 - `dist/latest.json` + `dist/datasetup-manifest.json` — update/download manifests
 - web bootstrapper artifact (see below, published as `SosisLauncherWebSetup.exe`)
 

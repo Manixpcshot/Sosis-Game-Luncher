@@ -19,7 +19,7 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Validate
         run: npm run validate
-      - name: Build installer (SosisLauncherSetup.exe)
+      - name: Build installers (SosisLauncherSetup.exe + .msi)
         run: npm run dist
       - name: Generate manifests
         run: node scripts/make-manifest.js
@@ -29,6 +29,7 @@ jobs:
           name: sosis-launcher-windows
           path: |
             dist/SosisLauncherSetup.exe
+            dist/SosisLauncherSetup.msi
             dist/latest.json
             dist/datasetup-manifest.json
 
@@ -73,10 +74,12 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             artifacts/sosis-launcher-windows/SosisLauncherSetup.exe
+            artifacts/sosis-launcher-windows/SosisLauncherSetup.msi
             artifacts/sosis-launcher-windows/latest.json
             artifacts/sosis-launcher-windows/datasetup-manifest.json
             artifacts/sosis-launcher-web-installer/SosisLauncherWebSetup.exe
 
-# NOTE: this workflow lives in ci/ because the deployment PAT may lack the
-# `workflow` scope. To activate it on GitHub, copy it to
-# .github/workflows/release.yml (requires a token/SSH key with workflow scope).
+# NOTE: this workflow is ALSO committed at .github/workflows/release.yml, so a
+# `git push` activates it (pushing workflow files requires a token with the
+# `workflow` scope). If your token lacks it, push everything except
+# .github/workflows, or copy ci/release.yml via the GitHub web UI.
