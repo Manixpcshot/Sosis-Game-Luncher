@@ -93,6 +93,12 @@ if (failures.length) {
   console.log('\nFAILURES (' + failures.length + '):');
   for (const [kind, msg] of failures.slice(0, 6)) console.log('---', kind, '\n', String(msg).slice(0, 1200));
 }
+// ---- offline entry must never leave a black shell ----
+window.__sosisEnterOffline();
+await new Promise((r) => setTimeout(r, 80));
+if (!splash.classList.contains('hidden')) failures.push(['offline-entry', 'splash not hidden after enterOffline with data']);
+if (view.children.length === 0) failures.push(['offline-entry', 'empty view = black screen after enterOffline']);
+
 // ---- visit every page ----
 for (const hash of ['#store', '#library', '#favorites', '#leaderboard', '#profile', '#ai', '#downloads', '#settings']) {
   window.location.hash = hash;

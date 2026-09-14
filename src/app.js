@@ -42,10 +42,28 @@ async function boot() {
   // (see splash-watch.js). Hides the splash and marks the session offline;
   // every manager already degrades gracefully without a server.
   window.__sosisEnterOffline = function enterOffline() {
-    if (state.settings) {
-      setState({ online: { internet: false, server: false, checkedAt: Date.now() } });
-      updateNetBanner(state.online, true);
+    if (!state.settings) {
+      // Core data never arrived: hiding the splash now would leave a BLACK
+      // empty shell (the old offline-mode bug). Instead retry the boot once;
+      // the splash keeps showing the real error if it fails again.
+      const splash = document.getElementById('bootSplash');
+      let box = document.getElementById('bootError');
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'boot-error';
+        box.id = 'bootError';
+        box.setAttribute('role', 'alert');
+        splash.appendChild(box);
+      }
+      box.textContent = 'Trying again offline… / تلاش دوباره به‌صورت آفلاین…';
+      box.classList.remove('hidden');
+      boot().catch((err) => {
+        if (window.__sosisSplashWatch) window.__sosisSplashWatch.showError((err && err.message) || String(err));
+      });
+      return;
     }
+    setState({ online: { internet: false, server: false, checkedAt: Date.now() } });
+    updateNetBanner(state.online, true);
     document.getElementById('bootSplash').classList.add('hidden');
     window.__sosisBooted = true;
   };

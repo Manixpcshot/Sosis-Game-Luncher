@@ -70,7 +70,7 @@ function registerIpc(ctx) {
         sessions: sessions.active(),
         storage: storage.info(),
         overlay: settings.get('overlay'),
-        online: require('../net').state
+        online: require('./net').state
       });
     })
   );
@@ -433,7 +433,7 @@ function registerIpc(ctx) {
   ipcMain.handle(CH.ACCOUNT_SERVER_PING, () => guard(() => ctx.account.ping()));
 
   // ------------------------------------------------------------- network / store
-  const netState = require('../net');
+  const netState = require('./net');
   ipcMain.handle(CH.NET_PROBE, () => guard(async () => netState.probe(true)));
   ipcMain.handle(CH.STORE_CATALOG, () => guard(async () => ctx.store.catalog()));
   ipcMain.handle(CH.STORE_CLAIM, (_e, p) => guard(() => ctx.store.claim(p && p.gameId)));

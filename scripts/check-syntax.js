@@ -55,6 +55,38 @@ for (const file of files) {
 }
 console.log('syntax: checked', files.length, 'files,', failures, 'failures');
 
+
+// 1b) module graph: every relative require()/import in app code must resolve
+// (this is the check that would have caught the missing '../net' module bug)
+function resolveTarget(fromFile, spec) {
+  const base = path.resolve(path.dirname(fromFile), spec);
+  for (const cand of [base, base + '.js', base + '.json', base + '.node', path.join(base, 'index.js')]) {
+    if (fs.existsSync(cand) && fs.statSync(cand).isFile()) return cand;
+  }
+  return null;
+}
+const GRAPH_DIRS = [path.join(ROOT, 'src'), path.join(ROOT, 'overlay'), ROOT];
+let graphBad = 0;
+for (const dir of GRAPH_DIRS) {
+  const list = dir === ROOT
+    ? fs.readdirSync(ROOT).filter((f) => f.endsWith('.js')).map((f) => path.join(ROOT, f))
+    : walk(dir);
+  for (const file of list) {
+    const src = fs.readFileSync(file, 'utf8');
+    const specs = [];
+    for (const m of src.matchAll(/\brequire\(\s*['"](\.[^'"]+)['"]\s*\)/g)) specs.push(m[1]);
+    for (const m of src.matchAll(/\bfrom\s+['"](\.[^'"]+)['"]/g)) specs.push(m[1]);
+    for (const spec of specs) {
+      if (!resolveTarget(file, spec)) {
+        graphBad++;
+        console.error('UNRESOLVED MODULE', path.relative(ROOT, file), '->', spec);
+      }
+    }
+  }
+}
+if (graphBad) failures++;
+else console.log('module graph: all relative requires/imports resolve');
+
 // 2) locales
 const en = JSON.parse(fs.readFileSync(path.join(ROOT, 'locales', 'en.json'), 'utf8'));
 const fa = JSON.parse(fs.readFileSync(path.join(ROOT, 'locales', 'fa.json'), 'utf8'));

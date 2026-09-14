@@ -26,14 +26,14 @@ ManifestDPIAware true
 !define UNINSTALL_APP_KEY "SosisLauncher"
 !define UNINSTALL_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SosisLauncher"
 !define INSTALL_REGISTRY_KEY "Software\SosisLauncher"
-!define VERSION "1.2.3"
+!define VERSION "1.3.0"
 !define SHELL_CONTEXT HKCU
 !define SRC_DIR "${__FILEDIR__}../dist/win-unpacked"
 
-VIProductVersion 1.2.3.0
+VIProductVersion 1.3.0.0
 VIAddVersionKey ProductName "Sosis Launcher"
-VIAddVersionKey ProductVersion "1.2.3"
-VIAddVersionKey FileVersion "1.2.3"
+VIAddVersionKey ProductVersion "1.3.0"
+VIAddVersionKey FileVersion "1.3.0"
 VIAddVersionKey FileDescription "Sosis Launcher Setup"
 VIAddVersionKey LegalCopyright "Copyright (c) 2026 Sosis Launcher"
 VIAddVersionKey CompanyName "Sosis Launcher"

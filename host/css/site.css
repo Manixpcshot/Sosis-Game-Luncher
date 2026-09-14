@@ -224,3 +224,44 @@ table.users th { color: var(--dim); font-size: 11.5px; text-transform: uppercase
   .two-col, .admin-grid { grid-template-columns: 1fr; }
   .admin-tabs { position: static; flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ---------------------------------------------------------------- animated
+   aurora background (CSS-only, GPU-friendly: transform+opacity on two fixed
+   blurred layers; disabled for users who prefer reduced motion) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  width: 62vmax;
+  height: 62vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: .32;
+  pointer-events: none;
+}
+body::before {
+  background: radial-gradient(circle at 32% 32%, #2563eb 0%, rgba(37,99,235,0) 62%);
+  top: -22vmax;
+  left: -16vmax;
+  animation: sosis-aurora-a 26s ease-in-out infinite alternate;
+}
+body::after {
+  background: radial-gradient(circle at 62% 62%, #a21caf 0%, rgba(162,28,175,0) 62%);
+  bottom: -26vmax;
+  right: -16vmax;
+  animation: sosis-aurora-b 32s ease-in-out infinite alternate;
+}
+@keyframes sosis-aurora-a {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(12vmax, 6vmax, 0) scale(1.15); }
+  100% { transform: translate3d(-6vmax, 10vmax, 0) scale(.95); }
+}
+@keyframes sosis-aurora-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-10vmax, -8vmax, 0) scale(1.2); }
+  100% { transform: translate3d(8vmax, -4vmax, 0) scale(.9); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none; }
+}

@@ -1,7 +1,7 @@
 {
   "name": "sosis-launcher",
   "productName": "Sosis Launcher",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Sosis Launcher - a modern, premium Windows game launcher with library management, play-time tracking, in-game overlay and an AI assistant. Bilingual (English / Persian) with real RTL support.",
   "author": {
     "name": "Manixpcshot",
@@ -19,7 +19,7 @@
     "dev": "cross-env NODE_ENV=development electron . --dev",
     "lint": "node scripts/check-syntax.js",
     "test": "node --test test/",
-    "validate": "node scripts/check-syntax.js && node --test test/",
+    "validate": "node scripts/check-syntax.js && node --test test/ && node test/main-boot.mjs && node test/smoke-boot.mjs",
     "icon": "node scripts/generate-icon-assets.js",
     "prebuild": "node scripts/check-syntax.js && node scripts/fetch-native-prebuilds.js win32-x64",
     "predist": "node scripts/fetch-native-prebuilds.js win32-x64",
@@ -31,7 +31,8 @@
     "installer:bootstrap": "node installer/build-bootstrapper.js",
     "installer:payload": "node installer/build-payload.js",
     "github:setup": "node scripts/github-setup.js",
-    "test:smoke": "node test/smoke-boot.mjs"
+    "test:smoke": "node test/smoke-boot.mjs",
+    "test:main": "node test/main-boot.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0"

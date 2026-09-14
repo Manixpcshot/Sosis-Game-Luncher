@@ -28,18 +28,20 @@ ManifestDPIAware true
 !define UNINSTALL_FILENAME "Uninstall Sosis Launcher.exe"
 !define UNINSTALL_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SosisLauncher"
 !define INSTALL_REGISTRY_KEY "Software\SosisLauncher"
-!define VERSION "1.2.3"
+!define VERSION "1.3.0"
 !define SHELL_CONTEXT HKCU
 
 !define PAYLOAD_HOST   "https://app.sosis-shop.top/datasetup/sosis-payload.zip"
-!define PAYLOAD_MIRROR "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.zip"
+!define PAYLOAD_MIRROR "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/download/v${VERSION}/sosis-payload.zip"
+!define PAYLOAD_MIRROR2 "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.zip"
 !define SHA_HOST       "https://app.sosis-shop.top/datasetup/sosis-payload.sha256"
-!define SHA_MIRROR     "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.sha256"
+!define SHA_MIRROR     "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/download/v${VERSION}/sosis-payload.sha256"
+!define SHA_MIRROR2    "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.sha256"
 
-VIProductVersion 1.2.3.0
+VIProductVersion 1.3.0.0
 VIAddVersionKey ProductName "Sosis Launcher"
-VIAddVersionKey ProductVersion "1.2.3"
-VIAddVersionKey FileVersion "1.2.3"
+VIAddVersionKey ProductVersion "1.3.0"
+VIAddVersionKey FileVersion "1.3.0"
 VIAddVersionKey FileDescription "Sosis Launcher Web Setup"
 VIAddVersionKey LegalCopyright "Copyright (c) 2026 Sosis Launcher"
 VIAddVersionKey CompanyName "Sosis Launcher"
@@ -183,6 +185,10 @@ Section "Install"
   StrCpy $dlUrl "${SHA_MIRROR}"
   StrCpy $dlDest $shaFile
   Call DownloadRetry
+  StrCmp $dlResult "success" _read_sha
+  StrCpy $dlUrl "${SHA_MIRROR2}"
+  StrCpy $dlDest $shaFile
+  Call DownloadRetry
   StrCmp $dlResult "success" _read_sha _sha_missing
 _read_sha:
   FileOpen $7 $shaFile r
@@ -212,6 +218,10 @@ _dl_host:
   StrCpy $dlUrl "${PAYLOAD_MIRROR}"
   StrCpy $dlDest $payloadZip
   Call DownloadRetry
+  StrCmp $dlResult "success" _dl_done
+  StrCpy $dlUrl "${PAYLOAD_MIRROR2}"
+  StrCpy $dlDest $payloadZip
+  Call DownloadRetry
   StrCmp $dlResult "success" _dl_done _dl_failed
 _dl_cli:
   DetailPrint "Downloading app payload from custom URL..."
@@ -220,7 +230,7 @@ _dl_cli:
   Call DownloadRetry
   StrCmp $dlResult "success" _dl_done _dl_failed
 _dl_failed:
-  MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download failed. Check your connection and retry.$\r$\nدانلود ناموفق بود؛ اتصال را بررسی کرده و دوباره تلاش کنید." IDRETRY _dl_retry
+  MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download failed from all sources (site + mirrors).$\r$\nLast error: $dlResult$\r$\nURLs tried: ${PAYLOAD_HOST} , ${PAYLOAD_MIRROR}$\r$\nMake sure sosis-payload.zip is uploaded in the site datasetup folder.$\r$\nدانلود از همهٔ منابع ناموفق بود. خطای آخر: $dlResult$\r$\nمطمئن شوید فایل sosis-payload.zip در پوشهٔ datasetup سایت آپلود شده است." IDRETRY _dl_retry
   Abort
 _dl_retry:
   Delete $payloadZip
