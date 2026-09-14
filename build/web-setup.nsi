@@ -28,7 +28,7 @@ ManifestDPIAware true
 !define UNINSTALL_FILENAME "Uninstall Sosis Launcher.exe"
 !define UNINSTALL_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SosisLauncher"
 !define INSTALL_REGISTRY_KEY "Software\SosisLauncher"
-!define VERSION "1.2.1"
+!define VERSION "1.2.2"
 !define SHELL_CONTEXT HKCU
 
 !define PAYLOAD_HOST   "https://app.sosis-shop.top/datasetup/sosis-payload.zip"
@@ -36,10 +36,10 @@ ManifestDPIAware true
 !define SHA_HOST       "https://app.sosis-shop.top/datasetup/sosis-payload.sha256"
 !define SHA_MIRROR     "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.sha256"
 
-VIProductVersion 1.2.1.0
+VIProductVersion 1.2.2.0
 VIAddVersionKey ProductName "Sosis Launcher"
-VIAddVersionKey ProductVersion "1.2.1"
-VIAddVersionKey FileVersion "1.2.1"
+VIAddVersionKey ProductVersion "1.2.2"
+VIAddVersionKey FileVersion "1.2.2"
 VIAddVersionKey FileDescription "Sosis Launcher Web Setup"
 VIAddVersionKey LegalCopyright "Copyright (c) 2026 Sosis Launcher"
 VIAddVersionKey CompanyName "Sosis Launcher"
@@ -264,10 +264,13 @@ _extract_ok:
   Delete $shaFile
 
   ; ---- 5) shortcuts / registry / uninstaller --------------------------------
+  ; ship the brand icon so shortcuts/ARP show it even when the exe resource
+  ; could not be stamped (cross-builds without Wine)
+  File /oname="$INSTDIR\SosisLauncher.ico" "${__FILEDIR__}icon.ico"
   StrCpy $newDesktopLink "$DESKTOP\${SHORTCUT_NAME}.lnk"
   StrCpy $newStartMenuLink "$SMPROGRAMS\${SHORTCUT_NAME}.lnk"
-  CreateShortcut "$newDesktopLink" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" "" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" 0
-  CreateShortcut "$newStartMenuLink" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" "" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" 0
+  CreateShortcut "$newDesktopLink" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" "" "$INSTDIR\SosisLauncher.ico" 0
+  CreateShortcut "$newStartMenuLink" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" "" "$INSTDIR\SosisLauncher.ico" 0
 
   WriteUninstaller "$INSTDIR\${UNINSTALL_FILENAME}"
 
@@ -276,7 +279,7 @@ _extract_ok:
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "UninstallString" '"$INSTDIR\${UNINSTALL_FILENAME}"'
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "QuietUninstallString" '"$INSTDIR\${UNINSTALL_FILENAME}" /S'
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "DisplayVersion" "${VERSION}"
-  WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "DisplayIcon" "$INSTDIR\${APP_EXECUTABLE_FILENAME},0"
+  WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "DisplayIcon" "$INSTDIR\SosisLauncher.ico,0"
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "Publisher" "Sosis Launcher"
   WriteRegStr SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "InstallLocation" "$INSTDIR"
   WriteRegDWORD SHELL_CONTEXT "${UNINSTALL_REGISTRY_KEY}" "NoModify" 1
@@ -298,6 +301,7 @@ SectionEnd
 Section "Uninstall"
   Delete "$DESKTOP\${SHORTCUT_NAME}.lnk"
   Delete "$SMPROGRAMS\${SHORTCUT_NAME}.lnk"
+  Delete "$INSTDIR\SosisLauncher.ico"
   Delete "$INSTDIR\${UNINSTALL_FILENAME}"
   ${If} $INSTDIR != ""
     RMDir /r "$INSTDIR"
