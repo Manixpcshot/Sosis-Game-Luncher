@@ -28,7 +28,7 @@ ManifestDPIAware true
 !define UNINSTALL_FILENAME "Uninstall Sosis Launcher.exe"
 !define UNINSTALL_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SosisLauncher"
 !define INSTALL_REGISTRY_KEY "Software\SosisLauncher"
-!define VERSION "1.2.2"
+!define VERSION "1.2.3"
 !define SHELL_CONTEXT HKCU
 
 !define PAYLOAD_HOST   "https://app.sosis-shop.top/datasetup/sosis-payload.zip"
@@ -36,10 +36,10 @@ ManifestDPIAware true
 !define SHA_HOST       "https://app.sosis-shop.top/datasetup/sosis-payload.sha256"
 !define SHA_MIRROR     "https://github.com/Manixpcshot/Sosis-Game-Luncher/releases/latest/download/sosis-payload.sha256"
 
-VIProductVersion 1.2.2.0
+VIProductVersion 1.2.3.0
 VIAddVersionKey ProductName "Sosis Launcher"
-VIAddVersionKey ProductVersion "1.2.2"
-VIAddVersionKey FileVersion "1.2.2"
+VIAddVersionKey ProductVersion "1.2.3"
+VIAddVersionKey FileVersion "1.2.3"
 VIAddVersionKey FileDescription "Sosis Launcher Web Setup"
 VIAddVersionKey LegalCopyright "Copyright (c) 2026 Sosis Launcher"
 VIAddVersionKey CompanyName "Sosis Launcher"
@@ -296,6 +296,14 @@ _extract_ok:
 
   ; applies the options-page choices (shortcuts / uninstaller opt-out)
   !insertmacro customInstall
+
+  ; silent auto-update flow: /S /UPDATE=1 -> relaunch the app when done
+  ClearErrors
+  ${GetParameters} $R0
+  ${GetOptions} $R0 "/UPDATE=" $R1
+  IfErrors _no_relaunch
+  Exec '"$INSTDIR\${APP_EXECUTABLE_FILENAME}"'
+_no_relaunch:
 SectionEnd
 
 Section "Uninstall"

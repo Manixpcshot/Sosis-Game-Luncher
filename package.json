@@ -1,7 +1,7 @@
 {
   "name": "sosis-launcher",
   "productName": "Sosis Launcher",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Sosis Launcher - a modern, premium Windows game launcher with library management, play-time tracking, in-game overlay and an AI assistant. Bilingual (English / Persian) with real RTL support.",
   "author": {
     "name": "Manixpcshot",

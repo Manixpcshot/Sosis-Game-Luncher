@@ -19,14 +19,17 @@ if (!file_exists($path)) {
     sosis_db_save($db);
 }
 $appName = (isset($s['siteName']) && $s['siteName'] !== '') ? $s['siteName'] : 'Sosis Launcher';
-$files = array(array(
-    'name' => $file,
-    'url' => 'https://app.sosis-shop.top/datasetup/' . $file,
-    'sha256' => $sha,
-    'size' => $size,
-    'kind' => 'installer',
-    'run' => array('silent' => array('/S'), 'after' => 'launch')
-));
+$files = array();
+if (file_exists($path)) {
+    $files[] = array(
+        'name' => $file,
+        'url' => 'https://app.sosis-shop.top/datasetup/' . $file,
+        'sha256' => $sha,
+        'size' => $size,
+        'kind' => 'installer',
+        'run' => array('silent' => array('/S'), 'after' => 'launch')
+    );
+}
 
 /* Companion artifacts for the tiny web installer: the bootstrapper EXE and
    the compressed app payload it downloads. Hashes are cached in the db and
@@ -57,6 +60,7 @@ foreach ($companions as $cname => $ckind) {
         'kind' => $ckind
     );
     if ($ckind !== 'payload-hash') $entry['sha256'] = $meta['sha256'];
+    if ($ckind === 'web-installer') $entry['run'] = array('silent' => array('/S', '/UPDATE=1'), 'after' => 'launch');
     $files[] = $entry;
 }
 

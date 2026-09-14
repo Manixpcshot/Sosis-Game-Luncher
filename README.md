@@ -134,10 +134,12 @@ working package. The final NSIS step that stamps the uninstaller needs Windows
 (`ci/release.yml`, `windows-latest` — copy it to `.github/workflows/release.yml`
 to activate) that produces:
 
-- `dist/SosisLauncherSetup.exe` — full offline installer (NSIS, Steam-style wizard)
-- `dist/SosisLauncherSetup.msi` — standard Windows MSI package
+- `dist/SosisLauncherWebSetup.exe` — **THE published installer**: tiny (~320 KB)
+  web setup that downloads the app payload from the site at install time
+- `dist/sosis-payload.zip` + `.sha256` — the big app archive the web setup fetches
 - `dist/latest.json` + `dist/datasetup-manifest.json` — update/download manifests
-- web bootstrapper artifact (see below, published as `SosisLauncherWebSetup.exe`)
+- `dist/SosisLauncherSetup.exe` — optional full OFFLINE installer for special
+  cases (built locally, NOT published to the site/releases since v1.2.3)
 
 Every tag push also runs the **release job**, which keeps the GitHub Release
 section ALWAYS up to date: the setup EXE + manifests are (re-)uploaded and the

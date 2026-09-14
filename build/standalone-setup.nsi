@@ -26,14 +26,14 @@ ManifestDPIAware true
 !define UNINSTALL_APP_KEY "SosisLauncher"
 !define UNINSTALL_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SosisLauncher"
 !define INSTALL_REGISTRY_KEY "Software\SosisLauncher"
-!define VERSION "1.2.2"
+!define VERSION "1.2.3"
 !define SHELL_CONTEXT HKCU
 !define SRC_DIR "${__FILEDIR__}../dist/win-unpacked"
 
-VIProductVersion 1.2.2.0
+VIProductVersion 1.2.3.0
 VIAddVersionKey ProductName "Sosis Launcher"
-VIAddVersionKey ProductVersion "1.2.2"
-VIAddVersionKey FileVersion "1.2.2"
+VIAddVersionKey ProductVersion "1.2.3"
+VIAddVersionKey FileVersion "1.2.3"
 VIAddVersionKey FileDescription "Sosis Launcher Setup"
 VIAddVersionKey LegalCopyright "Copyright (c) 2026 Sosis Launcher"
 VIAddVersionKey CompanyName "Sosis Launcher"
@@ -114,6 +114,14 @@ Section "Install"
 
   ; applies the options-page choices (shortcuts / uninstaller opt-out)
   !insertmacro customInstall
+
+  ; silent auto-update flow: /S /UPDATE=1 -> relaunch the app when done
+  ClearErrors
+  ${GetParameters} $R0
+  ${GetOptions} $R0 "/UPDATE=" $R1
+  IfErrors _no_relaunch
+  Exec '"$INSTDIR\${APP_EXECUTABLE_FILENAME}"'
+_no_relaunch:
 SectionEnd
 
 Section "Uninstall"

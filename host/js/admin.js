@@ -111,10 +111,38 @@
   }
 
   /* ------------------------------------------------ files */
-  function renderFiles(host) {
+  async function renderFiles(host) {
+    let man = { files: [] };
+    try { man = await (await fetch('/datasetup')).json(); } catch (e) { /* offline */ }
+    const entry = (k) => (man.files || []).find((f) => f.kind === k) || null;
+    const web = entry('web-installer');
+    const payload = entry('payload');
+    const legacy = entry('installer');
+    const card = (title, e, hint) => `
+      <div class="card" style="padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <b>${title}</b>
+          <span class="small ${e ? 'ok' : 'bad'}" style="color:${e ? 'var(--success)' : 'var(--danger)'}">${e ? '✓ active' : '✗ missing'}</span>
+        </div>
+        ${e
+          ? `<div class="small muted" style="margin-top:6px">${fmtBytes(e.size)} · sha256 <code>${String(e.sha256 || '').slice(0, 16)}…</code><br><code>${e.url}</code></div>`
+          : `<div class="small muted" style="margin-top:6px">${hint}</div>`}
+      </div>`;
     host.innerHTML = `
-      <h2 style="margin-top:0">🗂 Download files (datasetup/)</h2>
-      <p class="muted small">These files are served from <code>/datasetup/&lt;name&gt;</code>. Upload the new SosisLauncherSetup.exe here, then publish it.</p>
+      <h2 style="margin-top:0">🌐 Web installer & payload</h2>
+      <p class="muted small">Distribution model: the <b>tiny web setup</b> (~320 KB) is what users download; at install time it fetches the <b>payload</b> (the big app archive) from this same folder, verifies SHA-256 and installs. Upload both here, then Publish the version.</p>
+      ${card('SosisLauncherWebSetup.exe — tiny web setup', web, 'Upload SosisLauncherWebSetup.exe below (from your build: dist/SosisLauncherWebSetup.exe).')}
+      ${card('sosis-payload.zip — app payload (~120 MB)', payload, 'Upload sosis-payload.zip below (from your build: dist/sosis-payload.zip). The .sha256 file is optional - the site computes the hash itself.')}
+      ${legacy ? `
+      <div class="card" style="padding:12px 14px;margin-bottom:14px;border-color:var(--danger)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <b>${legacy.name} — legacy full offline setup</b>
+          <span class="small">${fmtBytes(legacy.size)}</span>
+        </div>
+        <div class="small muted" style="margin:6px 0">No longer needed: updates and installs go through the tiny web setup. Deleting frees ~${Math.round(legacy.size / 1048576)} MB.</div>
+        <button class="btn danger" id="delLegacy">Delete legacy setup</button>
+      </div>` : ''}
+      <h3>🗂 All files in datasetup/</h3>
       <div class="row" style="margin-bottom:14px">
         <input type="file" id="fileInput" />
         <button class="btn primary" id="uploadBtn">Upload</button>
@@ -122,6 +150,14 @@
       </div>
       <div class="progress hidden" id="upProg"><span></span></div>
       <div id="fileList"></div>`;
+    const delLegacy = $('delLegacy');
+    if (delLegacy) delLegacy.onclick = async () => {
+      if (!confirm('Delete ' + legacy.name + ' from the server? The site will switch to SosisLauncherWebSetup.exe automatically.')) return;
+      const r = await API('/api/admin/files/' + encodeURIComponent(legacy.name), { method: 'DELETE' });
+      if (r && r.ok === false) alert('Delete failed: ' + r.error);
+      await refresh();
+      renderFiles(host);
+    };
     const list = $('fileList');
     const draw = () => {
       list.innerHTML = '';

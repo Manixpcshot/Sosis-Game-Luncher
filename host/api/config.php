@@ -9,7 +9,9 @@ sosis_json_out(array(
     'downloadEnabled' => (bool) $s['downloadEnabled'],
     'latestVersion' => $s['latestVersion'],
     'notes' => $s['notes'],
-    'downloadUrl' => $s['downloadEnabled'] ? '/datasetup/' . basename($s['installerFile']) : null,
+    'downloadUrl' => $s['downloadEnabled']
+        ? '/datasetup/' . (is_file(SOSIS_DOWNLOADS . '/SosisLauncherWebSetup.exe') ? 'SosisLauncherWebSetup.exe' : basename($s['installerFile']))
+        : null,
     'siteName' => isset($s['siteName']) ? $s['siteName'] : 'Sosis Launcher',
     'heroTitle' => isset($s['heroTitle']) ? $s['heroTitle'] : '',
     'heroSub' => isset($s['heroSub']) ? $s['heroSub'] : '',

@@ -147,7 +147,7 @@ class UpdateManager extends EventEmitter {
     const file = this.downloadedFile;
     if (!file || !fs.existsSync(file)) return { ok: false, error: 'no-installer' };
     try {
-      const child = spawn(file, ['--update'], { detached: true, stdio: 'ignore' });
+      const child = spawn(file, ['/S', '/UPDATE=1'], { detached: true, stdio: 'ignore' });
       child.unref();
       this._setState({ phase: 'installing' });
       setTimeout(() => app.quit(), 600);
