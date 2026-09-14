@@ -104,6 +104,14 @@ npm install
 npm run dist       # -> dist/SosisLauncherSetup.exe (NSIS) + dist/SosisLauncherSetup.msi
 ```
 
+The NSIS setup can also be produced **on any OS without Wine** with the
+standalone script (same wizard: rules -> options -> dir -> install -> finish,
+English + Farsi, silent `/S` support for the auto-update pipeline):
+
+```bash
+makensis build/standalone-setup.nsi   # -> dist/SosisLauncherSetup.exe
+```
+
 `predist` automatically fetches the matching **better-sqlite3 prebuild for the
 Electron ABI (win32-x64)**, so cross-building from Linux/macOS also produces a
 working package. The final NSIS step that stamps the uninstaller needs Windows
