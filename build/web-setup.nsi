@@ -266,7 +266,7 @@ _extract_ok:
   ; ---- 5) shortcuts / registry / uninstaller --------------------------------
   ; ship the brand icon so shortcuts/ARP show it even when the exe resource
   ; could not be stamped (cross-builds without Wine)
-  File /oname="$INSTDIR\SosisLauncher.ico" "${__FILEDIR__}icon.ico"
+  File /oname=$INSTDIR\SosisLauncher.ico "${__FILEDIR__}icon.ico"
   StrCpy $newDesktopLink "$DESKTOP\${SHORTCUT_NAME}.lnk"
   StrCpy $newStartMenuLink "$SMPROGRAMS\${SHORTCUT_NAME}.lnk"
   CreateShortcut "$newDesktopLink" "$INSTDIR\${APP_EXECUTABLE_FILENAME}" "" "$INSTDIR\SosisLauncher.ico" 0
