@@ -32,8 +32,8 @@ export function downloadsPage(root) {
     updatePanel.appendChild(h('h3', { 'data-i18n': 'downloads.updateSection' }));
     updatePanel.appendChild(
       h('div', { class: 'info-list' }, [
-        h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'downloads.folder' }), h('span', { class: 'v path-chip', text: d.effectiveFolder || '—')]),
-        h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'downloads.concurrent' }), h('span', { class: 'v', text: String(d.concurrentDownloads) ] )]),
+        h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'downloads.folder' }), h('span', { class: 'v path-chip', text: d.effectiveFolder || '—' })]),
+        h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'downloads.concurrent' }), h('span', { class: 'v', text: String(d.concurrentDownloads) })]),
         h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'downloads.autoUpdate' }), h('span', { class: 'v', text: d.autoUpdate ? t('common.yes') : t('common.no') })])
       ])
     );

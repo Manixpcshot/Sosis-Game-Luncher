@@ -1,7 +1,7 @@
 {
   "name": "sosis-launcher",
   "productName": "Sosis Launcher",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Sosis Launcher - a modern, premium Windows game launcher with library management, play-time tracking, in-game overlay and an AI assistant. Bilingual (English / Persian) with real RTL support.",
   "author": {
     "name": "Manixpcshot",
@@ -30,7 +30,8 @@
     "postdist": "node scripts/make-manifest.js",
     "installer:bootstrap": "node installer/build-bootstrapper.js",
     "installer:payload": "node installer/build-payload.js",
-    "github:setup": "node scripts/github-setup.js"
+    "github:setup": "node scripts/github-setup.js",
+    "test:smoke": "node test/smoke-boot.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0"
@@ -38,7 +39,8 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "electron": "^33.4.5",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "jsdom": "^29.1.1"
   },
   "build": {
     "appId": "top.sosis-shop.launcher",

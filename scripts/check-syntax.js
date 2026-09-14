@@ -24,17 +24,36 @@ function walk(dir, out = []) {
 
 let failures = 0;
 
-// 1) syntax
-for (const file of walk(ROOT)) {
+// 1) syntax — check every file twice: as-is, and (when it contains ESM
+// syntax) re-checked as .mjs. Plain `node --check file.js` parses as CJS and
+// silently misses bracket errors in module files (this once shipped a broken
+// downloads.js that left the app stuck on the splash screen).
+const os = require('os');
+const tmpMjs = path.join(os.tmpdir(), 'sosis-syntax-check.mjs');
+const files = walk(ROOT);
+for (const file of files) {
   const rel = path.relative(ROOT, file);
   const res = cp.spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
   if (res.status !== 0) {
     failures++;
     console.error('SYNTAX FAIL', rel);
     console.error(res.stderr);
+    continue;
+  }
+  if (file.endsWith('.js')) {
+    const src = fs.readFileSync(file, 'utf8');
+    if (/^\s*(import|export)[\s{*('"]/m.test(src)) {
+      fs.copyFileSync(file, tmpMjs);
+      const res2 = cp.spawnSync(process.execPath, ['--check', tmpMjs], { encoding: 'utf8' });
+      if (res2.status !== 0) {
+        failures++;
+        console.error('SYNTAX FAIL (as ESM)', rel);
+        console.error(String(res2.stderr).split('\n').slice(0, 8).join('\n'));
+      }
+    }
   }
 }
-console.log('syntax: checked', walk(ROOT).length, 'files,', failures, 'failures');
+console.log('syntax: checked', files.length, 'files,', failures, 'failures');
 
 // 2) locales
 const en = JSON.parse(fs.readFileSync(path.join(ROOT, 'locales', 'en.json'), 'utf8'));

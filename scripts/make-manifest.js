@@ -39,16 +39,28 @@ if (!fs.existsSync(setup)) {
 const hash = sha256(setup);
 const size = fs.statSync(setup).size;
 
+const optional = (file) => {
+  const p = path.join(DIST, file);
+  if (!fs.existsSync(p)) return null;
+  return { url: null, sha256: sha256(p), size: fs.statSync(p).size, path: p };
+};
+const websetup = optional('SosisLauncherWebSetup.exe');
+const payload = optional('sosis-payload.zip');
+const portable = optional(`SosisLauncher-${pkg.version}-win64-portable.zip`);
+
 const latest = {
   app: 'Sosis Launcher',
   channel: 'stable',
   version: pkg.version,
-  download: `${UPDATE_BASE}/SosisLauncherSetup.exe`,
+  download: `${BASE_URL}/SosisLauncherSetup.exe`,
   sha256: hash,
   size,
   releasedAt: new Date().toISOString(),
   notes: `Sosis Launcher ${pkg.version}`
 };
+if (websetup) latest.webSetup = { url: `${BASE_URL}/SosisLauncherWebSetup.exe`, sha256: websetup.sha256, size: websetup.size };
+if (payload) latest.payload = { url: `${BASE_URL}/sosis-payload.zip`, sha256: payload.sha256, size: payload.size };
+if (portable) latest.portable = { url: `${UPDATE_BASE}/releases/download/v${pkg.version}/SosisLauncher-${pkg.version}-win64-portable.zip`, sha256: portable.sha256, size: portable.size };
 fs.writeFileSync(path.join(DIST, 'latest.json'), JSON.stringify(latest, null, 2));
 
 const datasetup = {
@@ -66,6 +78,8 @@ const datasetup = {
     }
   ]
 };
+if (websetup) datasetup.files.push({ name: 'SosisLauncherWebSetup.exe', url: `${BASE_URL}/SosisLauncherWebSetup.exe`, sha256: websetup.sha256, size: websetup.size, kind: 'web-installer' });
+if (payload) datasetup.files.push({ name: 'sosis-payload.zip', url: `${BASE_URL}/sosis-payload.zip`, sha256: payload.sha256, size: payload.size, kind: 'payload' });
 fs.writeFileSync(path.join(DIST, 'datasetup-manifest.json'), JSON.stringify(datasetup, null, 2));
 
 console.log('manifests written:');

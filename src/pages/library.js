@@ -21,7 +21,8 @@ export async function addGameFlow() {
   }
 }
 
-export function libraryPage(root, { favoritesOnly = false } = {}) {
+export function libraryPage(root, opts) {
+  const { favoritesOnly = false } = opts || {};
   const header = h('div', { class: 'page-header' }, [
     h('div', { class: 'page-heading' }, [
       h('h1', { 'data-i18n': favoritesOnly ? 'nav.favorites' : 'nav.library' }),

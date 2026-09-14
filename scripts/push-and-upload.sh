@@ -64,6 +64,9 @@ upload_asset() { # $1 = file path
 
 upload_asset "dist/SosisLauncherSetup.exe"
 upload_asset "dist/SosisLauncherSetup.msi"
+upload_asset "dist/SosisLauncherWebSetup.exe"
+upload_asset "dist/sosis-payload.zip"
+upload_asset "dist/sosis-payload.sha256"
 upload_asset "dist/SosisLauncher-${VERSION}-win64-portable.zip"
 upload_asset "dist/SosisLauncher-WebPlatform-cPanel-${VERSION}.zip"
 upload_asset "dist/latest.json"

@@ -67,10 +67,20 @@
   feature degrade gracefully; the store shows its cached catalog, session sync
   and update checks are skipped, and the UI comes back automatically when the
   connection returns.
-- **Web installer** — `SosisLauncherSetup.exe` bootstrapper that downloads the
-  payload from the **Launcher Download Endpoint**
-  (`https://app.sosis-shop.top/datasetup`), verifies SHA-256, installs, creates
-  shortcuts and launches the app; retry/cancel on failure.
+- **Web installer** — `SosisLauncherWebSetup.exe`, a **tiny (~315 KB) NSIS
+  bootstrapper**: at install time it downloads the compressed app payload
+  (`sosis-payload.zip`, ~118 MB) from the **Launcher Download Endpoint**
+  (`https://app.sosis-shop.top/datasetup`, GitHub Releases as automatic
+  mirror), shows progress (%, MB, speed/ETA), verifies **SHA-256** with
+  `certutil`, extracts with `bsdtar` (PowerShell `Expand-Archive` fallback),
+  then creates shortcuts/uninstaller and launches the app. Retry (3 attempts
+  per URL) and cancel are built in; silent mode: `/S`, custom source:
+  `/URL=<payload-url> /SHA256=<hex>`.
+- **Self-healing splash** — a non-module watchdog (`src/splash-watch.js`)
+  catches *any* renderer boot failure (even a module-graph syntax error),
+  shows the real error on the splash and offers an **Enter offline** button
+  (also revealed automatically if boot takes >6 s) so the app never hangs on
+  the loading screen without a way out.
 
 ---
 
@@ -109,8 +119,13 @@ standalone script (same wizard: rules -> options -> dir -> install -> finish,
 English + Farsi, silent `/S` support for the auto-update pipeline):
 
 ```bash
-makensis build/standalone-setup.nsi   # -> dist/SosisLauncherSetup.exe
+makensis -NOCONFIG -INPUTCHARSET UTF8 build/standalone-setup.nsi   # -> dist/SosisLauncherSetup.exe
 ```
+
+(All compile-time paths inside the `.nsi` scripts resolve through
+`${__FILEDIR__}`, so makensis can be invoked from any working directory. When
+driving makensis from Node/CI on Linux, pass `env: { _: '<makensis path>' }` —
+the electron-builder NSIS build derives its data directory from that variable.)
 
 `predist` automatically fetches the matching **better-sqlite3 prebuild for the
 Electron ABI (win32-x64)**, so cross-building from Linux/macOS also produces a
@@ -144,11 +159,14 @@ Silent installs (`/S`, used by the auto-update pipeline) skip the pages and
 keep all three options ON by default. The script is syntax-verified with
 makensis (UTF-16 + nsDialogs compile check).
 
-Web bootstrapper (the downloading setup):
+Web bootstrapper (the tiny downloading setup):
 
 ```bash
-npm run installer:bootstrap   # -> installer/bootstrapper/dist/SosisLauncherSetup.exe
-npm run installer:payload     # stage payload + manifest for upload
+npm run installer:bootstrap   # makensis build/web-setup.nsi -> dist/SosisLauncherWebSetup.exe (~315 KB)
+npm run installer:payload     # dist/win-unpacked -> dist/sosis-payload.zip + .sha256,
+                              # and stages installer/payload/ (payload, websetup, full setup,
+                              # index.json) ready to upload into the host `datasetup/` folder
+                              # (Admin panel -> Files tab or cPanel File Manager)
 ```
 
 ---

@@ -274,10 +274,10 @@ const PANELS = {
     return h('div', { class: 'col' }, [
       group('settings.storage', [
         h('div', { class: 'info-list' }, [
-          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.backend' }), h('span', { class: 'v', text: info ? info.backend : '—')]),
-          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.location' }), h('span', { class: 'v path-chip', text: info ? info.path : '—')]),
-          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.gamesStored' }), h('span', { class: 'v', text: info ? String(info.games) : '—')]),
-          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.secretsMethod' }), h('span', { class: 'v', text: state.meta && state.meta.secretsMethod ? state.meta.secretsMethod : '—')])
+          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.backend' }), h('span', { class: 'v', text: info ? info.backend : '—' })]),
+          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.location' }), h('span', { class: 'v path-chip', text: info ? info.path : '—' })]),
+          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.gamesStored' }), h('span', { class: 'v', text: info ? String(info.games) : '—' })]),
+          h('div', { class: 'info-row' }, [h('span', { class: 'k', 'data-i18n': 'storage.secretsMethod' }), h('span', { class: 'v', text: state.meta && state.meta.secretsMethod ? state.meta.secretsMethod : '—' })])
         ]),
         info && info.recovered ? h('p', { class: 'small', style: { color: 'var(--warn)' }, 'data-i18n': 'storage.recoveredNote' }) : null,
         h('div', { class: 'row mt' }, [

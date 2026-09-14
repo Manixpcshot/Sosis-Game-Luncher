@@ -11,7 +11,6 @@ secrets.bin
 
 # Build outputs
 dist/
-build/
 release/
 out/
 installer/bootstrapper/dist/

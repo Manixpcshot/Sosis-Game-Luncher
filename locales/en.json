@@ -387,5 +387,7 @@
   "net.offlineNoServer": "Offline mode — the Sosis server is unreachable.",
   "net.retry": "Retry",
   "net.back": "Connection restored — you're back online.",
-  "splash.offline": "Offline mode"
+  "splash.offline": "Offline mode",
+  "splash.enterOffline": "Enter offline",
+  "splash.slowBoot": "Startup is taking longer than usual. You can continue offline."
 }

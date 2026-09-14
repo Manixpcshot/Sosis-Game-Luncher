@@ -7,7 +7,7 @@
 
 const DEFAULTS = {
   general: {
-    runAtLogin: false,
+    runAtLogin: true,
     closeToTray: true,
     startMinimized: false,
     hardwareAcceleration: true,

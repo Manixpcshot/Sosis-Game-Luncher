@@ -387,5 +387,7 @@
   "net.offlineNoServer": "حالت آفلاین — سرور Sosis در دسترس نیست.",
   "net.retry": "تلاش مجدد",
   "net.back": "اتصال برقرار شد — دوباره آنلاین هستید.",
-  "splash.offline": "حالت آفلاین"
+  "splash.offline": "حالت آفلاین",
+  "splash.enterOffline": "ورود آفلاین",
+  "splash.slowBoot": "راه‌اندازی طولانی‌تر از حد معمول است. می‌توانید آفلاین وارد شوید."
 }

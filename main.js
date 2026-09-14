@@ -91,6 +91,18 @@ if (!gotLock) {
     if (!settings.get('general', 'hardwareAcceleration')) {
       app.disableHardwareAcceleration();
     }
+    // Apply auto-start at every launch so the default (ON) takes effect for
+    // fresh installs and any external change is re-synced.
+    try {
+      if (process.platform === 'win32' || process.platform === 'darwin') {
+        app.setLoginItemSettings({
+          openAtLogin: !!settings.get('general', 'runAtLogin'),
+          openAsHidden: false
+        });
+      }
+    } catch (err) {
+      logUtil.warn('setLoginItemSettings failed:', err && err.message);
+    }
 
     // 3) Secrets / translations / domain managers
     const secrets = new SecretsManager(storage, require('electron').safeStorage);

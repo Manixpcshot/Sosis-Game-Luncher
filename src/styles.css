@@ -929,6 +929,37 @@ textarea.text-input { resize: vertical; min-height: 70px; }
   color: #fbbf24;
   letter-spacing: 0.4px;
 }
+.boot-error {
+  margin-top: 12px;
+  max-width: 480px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.08);
+  color: #fca5a5;
+  font-size: 11.5px;
+  line-height: 1.6;
+  text-align: center;
+  word-break: break-word;
+  direction: ltr;
+}
+.boot-offline-btn {
+  margin-top: 14px;
+  padding: 9px 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.boot-offline-btn:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
+.boot-offline-btn:active { transform: scale(0.97); }
+.boot-offline-btn.hidden, .boot-error.hidden { display: none; }
 body.offline .store-actions .btn-primary[disabled] { opacity: 0.5; }
 
 /* ---- store page */

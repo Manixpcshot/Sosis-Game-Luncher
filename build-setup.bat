@@ -61,17 +61,37 @@ echo.
 echo  [4/4] Generating update manifests...
 node scripts\make-manifest.js
 
+REM ---- 6) Payload for the tiny web installer (pure Node, always works)
+echo.
+echo  [extra] Building sosis-payload.zip + staging installer\payload\...
+call npm run installer:payload
+
+REM ---- 7) Tiny web installer (needs makensis / NSIS 3.x)
+where makensis >nul 2>nul
+if errorlevel 1 (
+  echo  [extra] makensis not found - skipping SosisLauncherWebSetup.exe.
+  echo          Install NSIS 3.x ^(https://nsis.sourceforge.io^) to enable it.
+) else (
+  echo  [extra] Building tiny web installer...
+  call npm run installer:bootstrap
+  if errorlevel 1 echo  [extra] web installer build FAILED ^(continuing^)
+)
+
 echo.
 echo  ============================================================
 echo    BUILD COMPLETE
 echo    Installer : dist\SosisLauncherSetup.exe
 echo    MSI       : dist\SosisLauncherSetup.msi
+echo    Web setup : dist\SosisLauncherWebSetup.exe  ^(if makensis found^)
+echo    Payload   : dist\sosis-payload.zip  ^(upload to host datasetup folder^)
 echo    Manifests : dist\latest.json + dist\datasetup-manifest.json
 echo.
 echo    Next steps:
 echo      1. Upload SosisLauncherSetup.exe to the admin panel (Files tab)
 echo         and Publish the new version  -^> apps auto-update.
-echo      2. Optional: publish everything to the GitHub Release:
+echo      2. Upload installer\payload\* into the host datasetup folder
+echo         ^(Admin panel -^> Files tab^)  -^> the tiny web installer works.
+echo      3. Optional: publish everything to the GitHub Release:
 echo         in Git-Bash:  GITHUB_TOKEN=... bash scripts/push-and-upload.sh
 echo  ============================================================
 echo.

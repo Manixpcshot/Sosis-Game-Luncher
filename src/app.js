@@ -38,9 +38,34 @@ const PAGES = {
 let currentPage = null;
 
 async function boot() {
-  const res = await window.sosis.meta.boot();
+  // Real "enter offline" entry point, invoked by the splash button
+  // (see splash-watch.js). Hides the splash and marks the session offline;
+  // every manager already degrades gracefully without a server.
+  window.__sosisEnterOffline = function enterOffline() {
+    if (state.settings) {
+      setState({ online: { internet: false, server: false, checkedAt: Date.now() } });
+      updateNetBanner(state.online, true);
+    }
+    document.getElementById('bootSplash').classList.add('hidden');
+    window.__sosisBooted = true;
+  };
+
+  const res = await Promise.race([
+    window.sosis.meta.boot(),
+    new Promise((resolve) =>
+      setTimeout(() => resolve({ ok: false, code: 'BOOT_TIMEOUT', error: 'Main process did not respond (timeout).' }), 10000)
+    )
+  ]);
   if (!res.ok) {
-    document.getElementById('bootSplash').innerHTML = '<div class="boot-name">Sosis Launcher</div><div class="muted">Boot failed: ' + res.error + '</div>';
+    const splash = document.getElementById('bootSplash');
+    const bar = splash.querySelector('.boot-bar');
+    if (bar) bar.classList.add('hidden');
+    const box = document.createElement('div');
+    box.className = 'boot-error';
+    box.setAttribute('role', 'alert');
+    box.textContent = 'Boot failed / راه‌اندازی ناموفق: ' + res.error;
+    splash.appendChild(box);
+    if (window.__sosisSplashWatch) window.__sosisSplashWatch.revealButton();
     return;
   }
   const data = res.data;
@@ -73,6 +98,9 @@ async function boot() {
     const splash = document.getElementById('bootSplash');
     splash.appendChild(h('div', { class: 'boot-offline', text: t('splash.offline') }));
   }
+  window.__sosisBooted = true;
+  if (window.__sosisSplashWatch) window.__sosisSplashWatch.cancel();
+  try { sessionStorage.removeItem('sosisSplashReloaded'); } catch { /* ignore */ }
   setTimeout(() => document.getElementById('bootSplash').classList.add('hidden'), wasOffline ? 1100 : 350);
 }
 
@@ -92,7 +120,7 @@ function route(force = false) {
   clear(view);
   if (currentPage.dispose) currentPage.dispose();
   const def = PAGES[next.page];
-  const handle = def.render(view, next.param);
+  const handle = def.render(view, next.param === null ? undefined : next.param);
   currentPage.handle = handle;
   if (handle && handle.dispose) currentPage.dispose = handle.dispose;
   document.getElementById('pageTitle').textContent = t(def.title);
@@ -228,4 +256,8 @@ window.addEventListener('unhandledrejection', (e) => {
   toast.error(t('errors.generic'));
 });
 
-boot();
+boot().catch((err) => {
+  const msg = (err && (err.stack || err.message)) || String(err);
+  if (window.__sosisSplashWatch) window.__sosisSplashWatch.showError(msg.split('\n').slice(0, 3).join(' | '));
+  else console.error('boot failed:', err);
+});
